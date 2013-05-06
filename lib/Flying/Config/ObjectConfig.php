@@ -43,7 +43,7 @@ class ObjectConfig extends AbstractConfig
      */
     public function __construct($owner, $options, $callbacks = null, $config = null)
     {
-        $this->_setOwner($owner);
+        $this->setOwner($owner);
         if (!is_array($options)) {
             throw new \InvalidArgumentException('Configuration options list must be an array');
         }
@@ -74,10 +74,10 @@ class ObjectConfig extends AbstractConfig
      * @throws \InvalidArgumentException
      * @return void
      */
-    protected function _setOwner($owner)
+    protected function setOwner($owner)
     {
         if (!is_object($owner)) {
-            throw new \InvalidArgumentException('Given owner of embedded configuration object is not an object');
+            throw new \InvalidArgumentException('Given owner of configuration object is not an object');
         }
         $this->_owner = $owner;
         $this->_classId = null; // Reset class Id because we have new owner
