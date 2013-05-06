@@ -32,7 +32,7 @@ abstract class AbstractConfig implements ConfigurableInterface
     public final function isConfigExists($name)
     {
         if (!is_array($this->_config)) {
-            $this->_bootstrapConfig();
+            $this->bootstrapConfig();
         }
         if ((is_string($name)) && ($name !== self::CLASS_ID_KEY)) {
             return (array_key_exists($name, $this->_config));
@@ -53,11 +53,11 @@ abstract class AbstractConfig implements ConfigurableInterface
     public function getConfig($config = null)
     {
         if (!is_array($this->_config)) {
-            $this->_bootstrapConfig();
+            $this->bootstrapConfig();
         }
         if ($config === null) {
             $config = $this->_config;
-            $config[self::CLASS_ID_KEY] = $this->_getConfigClassId();
+            $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
             return ($config);
         } elseif (is_string($config)) {
             // This is request for configuration option value
@@ -68,25 +68,25 @@ abstract class AbstractConfig implements ConfigurableInterface
             }
         } elseif ((is_array($config)) &&
             (array_key_exists(self::CLASS_ID_KEY, $config)) && // This is repetitive call to getConfig()
-            ($config[self::CLASS_ID_KEY] == $this->_getConfigClassId())
+            ($config[self::CLASS_ID_KEY] == $this->getConfigClassId())
         ) // Only classes with same configuration class Id can share configurations
         {
             return ($config);
         }
         // This is request for configuration (with possible merging)
-        $config = $this->toArray($config);
+        $config = $this->configToArray($config);
         if (!is_array($config)) {
             $config = $this->_config;
-            $config[self::CLASS_ID_KEY] = $this->_getConfigClassId();
+            $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
             return ($config);
         }
         $result = $this->_config;
-        $result[self::CLASS_ID_KEY] = $this->_getConfigClassId();
+        $result[self::CLASS_ID_KEY] = $this->getConfigClassId();
         foreach ($config as $name => $value) {
             if ((!array_key_exists($name, $result)) || ($name == self::CLASS_ID_KEY)) {
                 continue;
             }
-            if ($this->_checkConfig($name, $value, self::OPERATION_GET)) {
+            if ($this->validateConfig($name, $value, self::OPERATION_GET)) {
                 $result[$name] = $value;
             }
         }
@@ -104,9 +104,9 @@ abstract class AbstractConfig implements ConfigurableInterface
     public final function setConfig($config, $value = null)
     {
         if (!is_array($this->_config)) {
-            $this->_bootstrapConfig();
+            $this->bootstrapConfig();
         }
-        $config = $this->toArray($config, $value, true);
+        $config = $this->configToArray($config, $value, true);
         if ((!is_array($config)) || (!sizeof($config))) {
             return;
         }
@@ -114,11 +114,11 @@ abstract class AbstractConfig implements ConfigurableInterface
             if (!array_key_exists($key, $this->_config)) {
                 continue;
             }
-            if (!$this->_checkConfig($key, $value, self::OPERATION_SET)) {
+            if (!$this->validateConfig($key, $value, self::OPERATION_SET)) {
                 continue;
             }
             $this->_config[$key] = $value;
-            $this->_onConfigChanged($key, $value, self::OPERATION_SET);
+            $this->onConfigChange($key, $value, self::OPERATION_SET);
         }
     }
 
@@ -139,11 +139,11 @@ abstract class AbstractConfig implements ConfigurableInterface
         // if getConfig() is overridden and calls modifyConfig() by itself
         if ((!is_array($config)) ||
             (!array_key_exists(self::CLASS_ID_KEY, $config)) ||
-            ($config[self::CLASS_ID_KEY] != $this->_getConfigClassId())
+            ($config[self::CLASS_ID_KEY] != $this->getConfigClassId())
         ) {
             $config = $this->getConfig($config);
         }
-        $modification = $this->toArray($modification, $value, true);
+        $modification = $this->configToArray($modification, $value, true);
         if ((!is_array($modification)) || (!sizeof($modification))) {
             return ($config);
         }
@@ -151,7 +151,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             if ($name == self::CLASS_ID_KEY) {
                 continue;
             }
-            if ($this->_checkConfig($name, $value, self::OPERATION_GET)) {
+            if ($this->validateConfig($name, $value, self::OPERATION_GET)) {
                 $config[$name] = $value;
             }
         }
@@ -163,13 +163,13 @@ abstract class AbstractConfig implements ConfigurableInterface
      *
      * @return void
      */
-    protected function _initConfig()
+    protected function initConfig()
     {
         // This method is mean to be overridden to provide configuration options set.
         // To allow inheritance of configuration options sets across several levels
         // of inherited classes - this method in nested classes should look like this:
-        // parent::_initConfig();
-        // $this->_mergeConfig(array(
+        // parent::initConfig();
+        // $this->mergeConfig(array(
         //     'option' => 'default value',
         // ));
         $this->_config = array();
@@ -183,7 +183,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      * @param string $operation     Current operation Id
      * @return boolean
      */
-    protected function _checkConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value, $operation)
     {
         // This method is mean to be overridden in a case if additional validation
         // of configuration option value should be performed before using it
@@ -205,7 +205,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      * @param string $operation     Current operation Id
      * @return void
      */
-    protected function _onConfigChanged($name, $value, $operation)
+    protected function onConfigChange($name, $value, $operation)
     {
         // This method is mean to be overridden in a case if some kind of additional logic
         // is required to be performed upon setting value of configuration option.
@@ -216,13 +216,13 @@ abstract class AbstractConfig implements ConfigurableInterface
      *
      * @return void
      */
-    protected final function _bootstrapConfig()
+    protected final function bootstrapConfig()
     {
         if ((is_array($this->_config)) || ($this->_configInBootstrap)) {
             return;
         }
         $this->_configInBootstrap = true;
-        $this->_initConfig();
+        $this->initConfig();
         $this->_configInBootstrap = false;
     }
 
@@ -231,13 +231,13 @@ abstract class AbstractConfig implements ConfigurableInterface
      *
      * @return string
      */
-    protected function _getConfigClassId()
+    protected function getConfigClassId()
     {
         $class = get_class($this);
         if (!array_key_exists($class, self::$_configClassesMap)) {
             // Determine which class actually defines configuration for given class
             $reflection = new \ReflectionClass($class);
-            $id = $reflection->getMethod('_initConfig')->getDeclaringClass()->getName();
+            $id = $reflection->getMethod('initConfig')->getDeclaringClass()->getName();
             self::$_configClassesMap[$class] = $id;
         }
         return (self::$_configClassesMap[$class]);
@@ -249,21 +249,21 @@ abstract class AbstractConfig implements ConfigurableInterface
      * @param array $config     Configuration options to merge
      * @return void
      */
-    protected final function _mergeConfig($config)
+    protected final function mergeConfig($config)
     {
         if (!is_array($this->_config)) {
-            $this->_bootstrapConfig();
+            $this->bootstrapConfig();
         }
         if (!is_array($config)) {
             return;
         }
         foreach ($config as $key => $value) {
-            if ((!$this->_configInBootstrap) && (!$this->_checkConfig($key, $value, self::OPERATION_MERGE))) {
+            if ((!$this->_configInBootstrap) && (!$this->validateConfig($key, $value, self::OPERATION_MERGE))) {
                 continue;
             }
             $this->_config[$key] = $value;
             if (!$this->_configInBootstrap) {
-                $this->_onConfigChanged($key, $value, self::OPERATION_MERGE);
+                $this->onConfigChange($key, $value, self::OPERATION_MERGE);
             }
         }
     }
@@ -276,7 +276,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      * @param boolean $inline   OPTIONAL TRUE to allow treating given string values as array entry
      * @return mixed
      */
-    protected function toArray($config, $value = null, $inline = false)
+    protected function configToArray($config, $value = null, $inline = false)
     {
         if (is_object($config)) {
             if (is_callable(array($config, 'toArray'))) {

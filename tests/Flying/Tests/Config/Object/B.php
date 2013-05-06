@@ -10,10 +10,10 @@ class B extends A
     /**
      * {@inheritdoc}
      */
-    protected function _initConfig()
+    protected function initConfig()
     {
-        parent::_initConfig();
-        $this->_mergeConfig(array(
+        parent::initConfig();
+        $this->mergeConfig(array(
             'inherited' => 'B',
             'from_b'    => 'B',
         ));
@@ -22,7 +22,7 @@ class B extends A
     /**
      * {@inheritdoc}
      */
-    protected function _checkConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value, $operation)
     {
         switch ($name) {
             case 'inherited':
@@ -32,7 +32,7 @@ class B extends A
                 $value = preg_replace('/[^B]+/i', '', $value);
                 break;
             default:
-                return parent::_checkConfig($name, $value, $operation);
+                return parent::validateConfig($name, $value, $operation);
                 break;
         }
         return true;

@@ -27,15 +27,15 @@ class ObjectConfig extends AbstractConfig
      * @var array $_callbacks
      */
     protected $_callbacks = array(
-        'checkConfig'     => null, // Custom implementation of _checkConfig()
-        'onConfigChanged' => null, // Custom implementation of _onConfigChanged()
+        'validateConfig' => null, // Custom implementation of validateConfig()
+        'onConfigChange' => null, // Custom implementation of onConfigChange()
     );
 
     /**
      * Class constructor
      *
      * @param object $owner         Owner of this configuration object
-     * @param array $options        List of configuration options to serve (@see AbstractConfig::_initConfig for description)
+     * @param array $options        List of configuration options to serve (@see AbstractConfig::initConfig for description)
      * @param array $callbacks      OPTIONAL List of callbacks to customize configuration object behavior
      * @param array $config         OPTIONAL Configuration options to initialize class with
      * @throws \InvalidArgumentException
@@ -63,7 +63,7 @@ class ObjectConfig extends AbstractConfig
                 $this->_callbacks[$type] = $callback;
             }
         }
-        $this->_bootstrapConfig();
+        $this->bootstrapConfig();
         $this->setConfig($config);
     }
 
@@ -88,7 +88,7 @@ class ObjectConfig extends AbstractConfig
      *
      * @return string
      */
-    protected function _getConfigClassId()
+    protected function getConfigClassId()
     {
         if (!$this->_classId) {
             $this->_classId = get_class($this->_owner);
@@ -101,10 +101,10 @@ class ObjectConfig extends AbstractConfig
      *
      * @return void
      */
-    protected function _initConfig()
+    protected function initConfig()
     {
-        parent::_initConfig();
-        $this->_mergeConfig($this->_options);
+        parent::initConfig();
+        $this->mergeConfig($this->_options);
     }
 
     /**
@@ -115,11 +115,11 @@ class ObjectConfig extends AbstractConfig
      * @param string $operation     Current operation Id
      * @return boolean
      */
-    protected function _checkConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value, $operation)
     {
-        if ($this->_callbacks['checkConfig']) {
+        if ($this->_callbacks['validateConfig']) {
             return (call_user_func_array(
-                $this->_callbacks['checkConfig'],
+                $this->_callbacks['validateConfig'],
                 array($name, &$value, $operation)
             ));
         }
@@ -134,11 +134,11 @@ class ObjectConfig extends AbstractConfig
      * @param string $operation     Current operation Id
      * @return void
      */
-    protected function _onConfigChanged($name, $value, $operation)
+    protected function onConfigChange($name, $value, $operation)
     {
-        if ($this->_callbacks['onConfigChanged']) {
+        if ($this->_callbacks['onConfigChange']) {
             call_user_func_array(
-                $this->_callbacks['onConfigChanged'],
+                $this->_callbacks['onConfigChange'],
                 array($name, $value, $operation)
             );
         }

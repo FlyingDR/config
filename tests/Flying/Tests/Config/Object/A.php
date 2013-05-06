@@ -12,10 +12,10 @@ class A extends AbstractConfig
     /**
      * {@inheritdoc}
      */
-    protected function _initConfig()
+    protected function initConfig()
     {
-        parent::_initConfig();
-        $this->_mergeConfig(array(
+        parent::initConfig();
+        $this->mergeConfig(array(
             'inherited' => 'A',
             'from_a'    => 'A',
         ));
@@ -24,7 +24,7 @@ class A extends AbstractConfig
     /**
      * {@inheritdoc}
      */
-    protected function _checkConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value, $operation)
     {
         switch ($name) {
             case 'inherited':
@@ -34,7 +34,7 @@ class A extends AbstractConfig
                 $value = preg_replace('/[^A]+/i', '', $value);
                 break;
             default:
-                return parent::_checkConfig($name, $value, $operation);
+                return parent::validateConfig($name, $value, $operation);
                 break;
         }
         return true;

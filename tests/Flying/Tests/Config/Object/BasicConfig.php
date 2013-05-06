@@ -12,10 +12,10 @@ class BasicConfig extends AbstractConfig
     /**
      * {@inheritdoc}
      */
-    protected function _initConfig()
+    protected function initConfig()
     {
-        parent::_initConfig();
-        $this->_mergeConfig(array(
+        parent::initConfig();
+        $this->mergeConfig(array(
             'string_option'  => 'some value',
             'boolean_option' => true,
             'int_option'     => 42,
@@ -27,7 +27,7 @@ class BasicConfig extends AbstractConfig
     /**
      * {@inheritdoc}
      */
-    protected function _checkConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value, $operation)
     {
         switch ($name) {
             case 'string_option':
@@ -46,7 +46,7 @@ class BasicConfig extends AbstractConfig
                 throw new \Exception('Test exception on checking config option');
                 break;
             default:
-                return parent::_checkConfig($name, $value, $operation);
+                return parent::validateConfig($name, $value, $operation);
                 break;
         }
         return true;

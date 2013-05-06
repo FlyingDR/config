@@ -11,14 +11,14 @@ class C extends B
     /**
      * {@inheritdoc}
      */
-    protected function _checkConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value, $operation)
     {
         switch ($name) {
             case 'inherited':
                 $value = preg_replace('/[^C]+/i', '', $value);
                 break;
             default:
-                return parent::_checkConfig($name, $value, $operation);
+                return parent::validateConfig($name, $value, $operation);
                 break;
         }
         return true;
