@@ -176,4 +176,20 @@ It is often required to extend list of configuration options into child classes.
 It is often necessary to perform some additional tasks upon change of object's configuration. It can be done by overriding ```onConfigChange()``` method. It is called each time after configuration option is changed. Name and new value of configuration option are given as arguments to this method. Good practice for implementation of this method would be to follow same structure as for ```validateConfig()``` method to ensure proper work of application's logic in a case of inherited classes.
 
 ## Use of standalone implementation
+Standalone implementation is provided by [```Flying\Config\ObjectConfig```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/ObjectConfig.php) class and provides same API and base implementation. Fully-functional usage example can be seen into corresponding [test class](https://github.com/FlyingDR/config/blob/master/tests/Flying/Tests/Config/Object/ConfigurableObject.php).
 
+It can be seen that it is generally may be good idea to implement [```Flying\Config\ConfigurableInterface```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/ConfigurableInterface.php) for such objects and proxy all methods to internal configuration object. In this case your object with standalone version of configuration functionality will be functionally equal to objects inherited from [```Flying\Config\AbstractConfig```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/AbstractConfig.php).
+
+## Implementation details
+For flexibility and performance reasons configuration options are stored and passed as arrays. To distinguish object's configuration from regular arrays - they have additional ```__config__``` entry (defined in [```Flying\Config\ConfigurableInterface```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/ConfigurableInterface.php)). Existence of this entry should be taken in mind when, for example, iterating over configuration options list. In this case it may be good idea to either unset this entry from array or skip it during iteration. It is bad idea to drop this entry if you plan to pass this configuration options somewhere because it will cause configuration re-validation on next access that may cause small performance penalty.
+```php
+<?php
+$config = $this->getConfig();
+foreach($config as $key=>$value) {
+    if (\Flying\Config\ConfigurableInterface::CLASS_ID_KEY === $key) {
+        continue;
+    }
+    // ...
+}
+```
+Another decision made for performance reasons: arrays that contains configuration id key are automatically treated as valid and **not** re-validated. It is your obligation to **not modify** configuration arrays by hands, you need to use ```modifyConfig()``` method instead.
