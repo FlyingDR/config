@@ -1,8 +1,7 @@
 {
     "name": "flying/config",
-    "description": "Implementation of per-object configuration options",
+    "description": "Implementation of object configuration options",
     "license": "MIT",
-    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Alexander Grimalovsky",
