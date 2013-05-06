@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<phpunit bootstrap="tests/Flying/Tests/bootstrap.php">
+    <testsuites>
+        <testsuite name="AllTests">
+            <directory suffix="Test.php">tests/Flying/Tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">lib/Flying</directory>
+        </whitelist>
+    </filter>
+</phpunit>
