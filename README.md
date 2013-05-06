@@ -1,5 +1,5 @@
-Object configuration functionality
-==================================
+Object configuration implementation
+===================================
 
 # Overview
 This package provides simple, fast and flexible implementation of object's configuration management.
