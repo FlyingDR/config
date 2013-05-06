@@ -12,13 +12,18 @@ for ($i = 0; $i < 10; $i++) {
     }
 }
 if (!$composer) {
-    // Autoloader function is taken from Doctrine tests bootstrap
     spl_autoload_register(function ($class) {
-        if (0 === strpos($class, 'Flying\\Tests\\')) {
-            $path = __DIR__ . '/../../' . strtr($class, '\\', '/') . '.php';
-            if (is_file($path) && is_readable($path)) {
-                require_once $path;
-                return true;
+        $map = array(
+            'Flying\\Tests\\'  => '/../../',
+            'Flying\\Config\\' => '/../../../lib/',
+        );
+        foreach ($map as $prefix => $path) {
+            if (0 === strpos($class, $prefix)) {
+                $path = __DIR__ . $path . strtr($class, '\\', '/') . '.php';
+                if (is_file($path) && is_readable($path)) {
+                    require_once $path;
+                    return true;
+                }
             }
         }
         return false;
