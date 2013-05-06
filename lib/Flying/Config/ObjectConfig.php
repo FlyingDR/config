@@ -38,27 +38,27 @@ class ObjectConfig extends AbstractConfig
      * @param array $options        List of configuration options to serve (@see AbstractConfig::initConfig for description)
      * @param array $callbacks      OPTIONAL List of callbacks to customize configuration object behavior
      * @param array $config         OPTIONAL Configuration options to initialize class with
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @return ObjectConfig
      */
     public function __construct($owner, $options, $callbacks = null, $config = null)
     {
         $this->setOwner($owner);
         if (!is_array($options)) {
-            throw new \InvalidArgumentException('Configuration options list must be an array');
+            throw new InvalidArgumentException('Configuration options list must be an array');
         }
         $this->_options = $options;
         if (is_array($callbacks)) {
             foreach ($callbacks as $type => $callback) {
                 if (!array_key_exists($type, $this->_callbacks)) {
-                    throw new \InvalidArgumentException('Unknown customization callback type: ' . $type);
+                    throw new InvalidArgumentException('Unknown customization callback type: ' . $type);
                 }
                 // If method name is passed instead of callback - create callback from it
                 if (is_string($callback)) {
                     $callback = array($this->_owner, $callback);
                 }
                 if (!is_callable($callback)) {
-                    throw new \InvalidArgumentException('Non-callable callback is given for customization callback type: ' . $type);
+                    throw new InvalidArgumentException('Non-callable callback is given for customization callback type: ' . $type);
                 }
                 $this->_callbacks[$type] = $callback;
             }
@@ -71,13 +71,13 @@ class ObjectConfig extends AbstractConfig
      * Set owner of this configuration object
      *
      * @param object $owner     Owner of this configuration object
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @return void
      */
     protected function setOwner($owner)
     {
         if (!is_object($owner)) {
-            throw new \InvalidArgumentException('Given owner of configuration object is not an object');
+            throw new InvalidArgumentException('Given owner of configuration object is not an object');
         }
         $this->_owner = $owner;
         $this->_classId = null; // Reset class Id because we have new owner

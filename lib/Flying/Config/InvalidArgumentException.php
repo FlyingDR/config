@@ -5,7 +5,7 @@ namespace Flying\Config;
 /**
  * Exception class
  */
-class Exception extends \Exception
+class InvalidArgumentException extends \InvalidArgumentException
 {
 
 }
