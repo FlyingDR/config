@@ -112,15 +112,14 @@ class ObjectConfig extends AbstractConfig
      *
      * @param string $name          Configuration option name
      * @param mixed $value          Option value (passed by reference)
-     * @param string $operation     Current operation Id
      * @return boolean
      */
-    protected function validateConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value)
     {
         if ($this->_callbacks['validateConfig']) {
             return (call_user_func_array(
                 $this->_callbacks['validateConfig'],
-                array($name, &$value, $operation)
+                array($name, &$value)
             ));
         }
         return (true);
@@ -131,15 +130,16 @@ class ObjectConfig extends AbstractConfig
      *
      * @param string $name          Configuration option name
      * @param mixed $value          Configuration option value
-     * @param string $operation     Current operation Id
+     * @param boolean $merge        TRUE if configuration option is changed during merge process,
+     *                              FALSE if it is changed by setting configuration option
      * @return void
      */
-    protected function onConfigChange($name, $value, $operation)
+    protected function onConfigChange($name, $value, $merge)
     {
         if ($this->_callbacks['onConfigChange']) {
             call_user_func_array(
                 $this->_callbacks['onConfigChange'],
-                array($name, $value, $operation)
+                array($name, $value, $merge)
             );
         }
     }

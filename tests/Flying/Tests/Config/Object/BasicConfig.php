@@ -27,7 +27,7 @@ class BasicConfig extends AbstractConfig
     /**
      * {@inheritdoc}
      */
-    protected function validateConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value)
     {
         switch ($name) {
             case 'string_option':
@@ -46,7 +46,7 @@ class BasicConfig extends AbstractConfig
                 throw new \Exception('Test exception on checking config option');
                 break;
             default:
-                return parent::validateConfig($name, $value, $operation);
+                return parent::validateConfig($name, $value);
                 break;
         }
         return true;

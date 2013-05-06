@@ -26,7 +26,7 @@ class ConfigurableObject implements ConfigurableInterface
             'rejected'       => 'abc',
             'exception'      => null,
         ), array(
-            'validateConfig' => function ($name, &$value, $operation) {
+            'validateConfig' => function ($name, &$value) {
                 switch ($name) {
                     case 'string_option':
                         $value = trim($value);

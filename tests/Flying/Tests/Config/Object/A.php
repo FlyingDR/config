@@ -24,7 +24,7 @@ class A extends AbstractConfig
     /**
      * {@inheritdoc}
      */
-    protected function validateConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value)
     {
         switch ($name) {
             case 'inherited':
@@ -34,7 +34,7 @@ class A extends AbstractConfig
                 $value = preg_replace('/[^A]+/i', '', $value);
                 break;
             default:
-                return parent::validateConfig($name, $value, $operation);
+                return parent::validateConfig($name, $value);
                 break;
         }
         return true;

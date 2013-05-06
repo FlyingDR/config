@@ -86,7 +86,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             if ((!array_key_exists($name, $result)) || ($name == self::CLASS_ID_KEY)) {
                 continue;
             }
-            if ($this->validateConfig($name, $value, self::OPERATION_GET)) {
+            if ($this->validateConfig($name, $value)) {
                 $result[$name] = $value;
             }
         }
@@ -114,11 +114,11 @@ abstract class AbstractConfig implements ConfigurableInterface
             if (!array_key_exists($key, $this->_config)) {
                 continue;
             }
-            if (!$this->validateConfig($key, $value, self::OPERATION_SET)) {
+            if (!$this->validateConfig($key, $value)) {
                 continue;
             }
             $this->_config[$key] = $value;
-            $this->onConfigChange($key, $value, self::OPERATION_SET);
+            $this->onConfigChange($key, $value, false);
         }
     }
 
@@ -151,7 +151,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             if ($name == self::CLASS_ID_KEY) {
                 continue;
             }
-            if ($this->validateConfig($name, $value, self::OPERATION_GET)) {
+            if ($this->validateConfig($name, $value)) {
                 $config[$name] = $value;
             }
         }
@@ -180,10 +180,9 @@ abstract class AbstractConfig implements ConfigurableInterface
      *
      * @param string $name          Configuration option name
      * @param mixed $value          Option value (passed by reference)
-     * @param string $operation     Current operation Id
      * @return boolean
      */
-    protected function validateConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value)
     {
         // This method is mean to be overridden in a case if additional validation
         // of configuration option value should be performed before using it
@@ -202,10 +201,11 @@ abstract class AbstractConfig implements ConfigurableInterface
      *
      * @param string $name          Configuration option name
      * @param mixed $value          Configuration option value
-     * @param string $operation     Current operation Id
+     * @param boolean $merge        TRUE if configuration option is changed during merge process,
+     *                              FALSE if it is changed by setting configuration option
      * @return void
      */
-    protected function onConfigChange($name, $value, $operation)
+    protected function onConfigChange($name, $value, $merge)
     {
         // This method is mean to be overridden in a case if some kind of additional logic
         // is required to be performed upon setting value of configuration option.
@@ -258,12 +258,12 @@ abstract class AbstractConfig implements ConfigurableInterface
             return;
         }
         foreach ($config as $key => $value) {
-            if ((!$this->_configInBootstrap) && (!$this->validateConfig($key, $value, self::OPERATION_MERGE))) {
+            if ((!$this->_configInBootstrap) && (!$this->validateConfig($key, $value))) {
                 continue;
             }
             $this->_config[$key] = $value;
             if (!$this->_configInBootstrap) {
-                $this->onConfigChange($key, $value, self::OPERATION_MERGE);
+                $this->onConfigChange($key, $value, true);
             }
         }
     }

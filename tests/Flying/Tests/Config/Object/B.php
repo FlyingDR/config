@@ -22,7 +22,7 @@ class B extends A
     /**
      * {@inheritdoc}
      */
-    protected function validateConfig($name, &$value, $operation)
+    protected function validateConfig($name, &$value)
     {
         switch ($name) {
             case 'inherited':
@@ -32,7 +32,7 @@ class B extends A
                 $value = preg_replace('/[^B]+/i', '', $value);
                 break;
             default:
-                return parent::validateConfig($name, $value, $operation);
+                return parent::validateConfig($name, $value);
                 break;
         }
         return true;

@@ -12,14 +12,6 @@ interface ConfigurableInterface
      * that defines ID of base class for configuration options set
      */
     const CLASS_ID_KEY = '__config__';
-    /**#@+
-     * Types of currently performed operation
-     */
-    const OPERATION_GET = 'get';
-    const OPERATION_SET = 'set';
-    const OPERATION_MERGE = 'merge';
-
-    /**#@-*/
 
     /**
      * Check if configuration option with given name is available in object configuration
