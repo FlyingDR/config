@@ -293,17 +293,17 @@ abstract class AbstractConfig implements ConfigurableInterface
                 $config = $config->toArray();
             } elseif ($config instanceof \Iterator) {
                 $temp = array();
-                foreach ($config as $name => $value) {
-                    $temp[$name] = $value;
+                foreach ($config as $k => $v) {
+                    $temp[$k] = $v;
                 }
                 $config = $temp;
             } elseif ($config instanceof \ArrayAccess) {
                 $temp = array();
-                foreach ($this->_config as $key => $value) {
-                    if (($key === ConfigurableInterface::CLASS_ID_KEY) || (!$config->offsetExists($key))) {
+                foreach ($this->_config as $k => $v) {
+                    if (($k === ConfigurableInterface::CLASS_ID_KEY) || (!$config->offsetExists($k))) {
                         continue;
                     }
-                    $temp[$key] = $config->offsetGet($key);
+                    $temp[$k] = $config->offsetGet($k);
                 }
                 $config = $temp;
             }
