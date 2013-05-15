@@ -9,17 +9,17 @@ abstract class AbstractConfig implements ConfigurableInterface
 {
     /**
      * Configuration options
-     * @var array $_config
+     * @var array
      */
     private $_config = null;
     /**
      * TRUE if configuration options bootstrap is being performed, FALSE otherwise
-     * @var boolean $_configInBootstrap
+     * @var boolean
      */
     private $_configInBootstrap = false;
     /**
      * Mapping table between class name and its configuration options set
-     * @var array $_configClassesMap
+     * @var array
      */
     private static $_configClassesMap = array();
 

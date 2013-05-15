@@ -9,22 +9,22 @@ class ObjectConfig extends AbstractConfig
 {
     /**
      * Owner of this configuration object
-     * @var object $_owner
+     * @var object
      */
     protected $_owner = null;
     /**
      * Configuration options for to serve by this configuration object
-     * @var array $_options
+     * @var array
      */
     protected $_options = array();
     /**
      * Configuration class Id for this configuration object
-     * @var string $_classId
+     * @var string
      */
     protected $_classId = null;
     /**
      * List of registered callbacks for customizing configuration object behavior
-     * @var array $_callbacks
+     * @var array
      */
     protected $_callbacks = array(
         'validateConfig' => null, // Custom implementation of validateConfig()
