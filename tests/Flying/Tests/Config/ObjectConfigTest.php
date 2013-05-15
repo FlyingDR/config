@@ -13,19 +13,19 @@ class ObjectConfigTest extends BaseConfigTest
 
     public function testMissedOwnerForConfigObjectCreation()
     {
-        $this->setExpectedException('\Flying\Config\InvalidArgumentException', 'Given owner of configuration object is not an object');
+        $this->setExpectedException('\InvalidArgumentException', 'Given owner of configuration object is not an object');
         new ObjectConfig(null, null);
     }
 
     public function testMissedConfigurationForConfigObjectCreation()
     {
-        $this->setExpectedException('\Flying\Config\InvalidArgumentException', 'Configuration options list must be an array');
+        $this->setExpectedException('\InvalidArgumentException', 'Configuration options list must be an array');
         new ObjectConfig($this, null);
     }
 
     public function testUnknownCallbackPassingForConfigObjectCreation()
     {
-        $this->setExpectedException('\Flying\Config\InvalidArgumentException', 'Unknown customization callback type: unknown');
+        $this->setExpectedException('\InvalidArgumentException', 'Unknown customization callback type: unknown');
         new ObjectConfig($this, array(), array(
             'unknown' => null,
         ));
@@ -33,7 +33,7 @@ class ObjectConfigTest extends BaseConfigTest
 
     public function testInvalidCallbackPassingForConfigObjectCreation()
     {
-        $this->setExpectedException('\Flying\Config\InvalidArgumentException', 'Non-callable callback is given for customization callback type: validateConfig');
+        $this->setExpectedException('\InvalidArgumentException', 'Non-callable callback is given for customization callback type: validateConfig');
         new ObjectConfig($this, array(), array(
             'validateConfig' => 'unavailableMethod',
         ));
@@ -41,7 +41,7 @@ class ObjectConfigTest extends BaseConfigTest
 
     public function testNonCallableCallbackPassingForConfigObjectCreation()
     {
-        $this->setExpectedException('\Flying\Config\InvalidArgumentException', 'Non-callable callback is given for customization callback type: validateConfig');
+        $this->setExpectedException('\InvalidArgumentException', 'Non-callable callback is given for customization callback type: validateConfig');
         new ObjectConfig($this, array(), array(
             'validateConfig' => array(),
         ));
