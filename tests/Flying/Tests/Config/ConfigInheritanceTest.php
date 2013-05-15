@@ -2,9 +2,9 @@
 
 namespace Flying\Tests\Config;
 
-use Flying\Tests\Config\Object\A;
-use Flying\Tests\Config\Object\B;
-use Flying\Tests\Config\Object\C;
+use Flying\Tests\Config\Fixtures\A;
+use Flying\Tests\Config\Fixtures\B;
+use Flying\Tests\Config\Fixtures\C;
 
 /**
  * Test for configuration objects work with inheritance

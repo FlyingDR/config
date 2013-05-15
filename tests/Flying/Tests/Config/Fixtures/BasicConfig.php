@@ -1,6 +1,6 @@
 <?php
 
-namespace Flying\Tests\Config\Object;
+namespace Flying\Tests\Config\Fixtures;
 
 use Flying\Config\AbstractConfig;
 

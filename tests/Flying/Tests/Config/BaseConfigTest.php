@@ -3,7 +3,7 @@
 namespace Flying\Tests\Config;
 
 use Flying\Config\ConfigurableInterface;
-use Flying\Tests\Config\Object\BasicConfig;
+use Flying\Tests\Config\Fixtures\BasicConfig;
 
 class BaseConfigTest extends AbstractConfigTest
 {
@@ -12,9 +12,9 @@ class BaseConfigTest extends AbstractConfigTest
      * @var array
      */
     protected $_configObjects = array(
-        '\Flying\Tests\Config\Object\ConfigAsArrayAccessObject',
-        '\Flying\Tests\Config\Object\ConfigAsIterableObject',
-        '\Flying\Tests\Config\Object\ConfigAsToArrayObject',
+        'ConfigAsArrayAccessObject',
+        'ConfigAsIterableObject',
+        'ConfigAsToArrayObject',
     );
     protected $_configReference = array(
         'string_option'  => 'some value',
@@ -112,6 +112,7 @@ class BaseConfigTest extends AbstractConfigTest
     public function testPassingObjectsAsConfigModifications()
     {
         foreach ($this->_configObjects as $configObject) {
+            $configObject = join('\\', array(__NAMESPACE__, 'Fixtures', $configObject));
             $modifications = new $configObject($this->_configModifications);
             $this->runConfigModificationTest($modifications, $this->_configModificationReference);
         }
@@ -189,6 +190,7 @@ class BaseConfigTest extends AbstractConfigTest
     public function testPassingObjectsAsConfigSetters()
     {
         foreach ($this->_configObjects as $configObject) {
+            $configObject = join('\\', array(__NAMESPACE__, 'Fixtures', $configObject));
             $modifications = new $configObject($this->_configSetModifications);
             $object = $this->getConfigObject();
             $object->setConfig($modifications);

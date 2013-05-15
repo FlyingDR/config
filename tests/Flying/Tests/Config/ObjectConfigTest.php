@@ -3,7 +3,7 @@
 namespace Flying\Tests\Config;
 
 use Flying\Config\ObjectConfig;
-use Flying\Tests\Config\Object\ConfigurableObject;
+use Flying\Tests\Config\Fixtures\ConfigurableObject;
 
 /**
  * Test for standalone configuration object
