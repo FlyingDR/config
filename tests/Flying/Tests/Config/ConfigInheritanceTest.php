@@ -20,6 +20,11 @@ class ConfigInheritanceTest extends AbstractConfigTest
         'from_a'    => 'A',
         'from_b'    => 'B',
     );
+    protected $_cReference = array(
+        'inherited' => 'C',
+        'from_a'    => 'A',
+        'from_b'    => 'B',
+    );
 
     public function testInheritedConfig()
     {
@@ -73,6 +78,17 @@ class ConfigInheritanceTest extends AbstractConfigTest
             'from_a'    => 'a',
             'from_b'    => 'b',
         ), get_class(new B()));
+    }
+
+    public function testOnConfigChangeCallback()
+    {
+        $method = 'onConfigChange';
+        $object = new A();
+        $this->runCallbackTest($object, $method, $this->_aReference);
+        $object = new B();
+        $this->runCallbackTest($object, $method, $this->_bReference);
+        $object = new C();
+        $this->runCallbackTest($object, $method, $this->_cReference);
     }
 
     /**

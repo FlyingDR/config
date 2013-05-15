@@ -3,6 +3,8 @@
 namespace Flying\Tests\Config;
 
 use Flying\Config\ConfigurableInterface;
+use Flying\Tests\Config\Fixtures\CallbackLog;
+use Flying\Tests\Config\Fixtures\CallbackTrackingInterface;
 
 abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,6 +39,29 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
         }
         if (sizeof($received)) {
             $this->fail('Unexpected fields: ' . join(', ', array_keys($received)));
+        }
+    }
+
+    /**
+     * Run tests of callback method in given class
+     *
+     * @param CallbackTrackingInterface $object                                                                        Test object instance
+     * @param string $method                                                                                           Callback method to test
+     * @param array $reference                                                                                         Reference configuration values to set
+     * @return void
+     */
+    protected function runCallbackTest(CallbackTrackingInterface $object, $method, array $reference)
+    {
+        $logger = new CallbackLog();
+        $object->setCallbackLogger($method, $logger);
+        foreach ($reference as $name => $value) {
+            $object->setConfig($name, $value);
+        }
+        $log = $logger->get();
+        foreach ($reference as $name => $value) {
+            $expected = array($method, $name, $value, false);
+            $actual = array_shift($log);
+            $this->assertTrue($expected === $actual);
         }
     }
 

@@ -2,12 +2,10 @@
 
 namespace Flying\Tests\Config\Fixtures;
 
-use Flying\Config\AbstractConfig;
-
 /**
  * Class A for testing configuration options inheritance
  */
-class A extends AbstractConfig
+class A extends TestConfig
 {
     /**
      * {@inheritdoc}

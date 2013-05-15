@@ -274,6 +274,13 @@ class BaseConfigTest extends AbstractConfigTest
         $this->assertEquals($config[$idKey], $classId);
     }
 
+    public function testOnConfigChangeCallback()
+    {
+        $tests = $this->_configModifications;
+        unset($tests['rejected']);
+        $this->runCallbackTest($this->getConfigObject(), 'onConfigChange', $tests);
+    }
+
     /**
      * Get configuration object to test
      *

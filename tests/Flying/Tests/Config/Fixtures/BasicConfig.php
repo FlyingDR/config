@@ -2,12 +2,10 @@
 
 namespace Flying\Tests\Config\Fixtures;
 
-use Flying\Config\AbstractConfig;
-
 /**
- * Test class
+ * Basic fixture class
  */
-class BasicConfig extends AbstractConfig
+class BasicConfig extends TestConfig
 {
     /**
      * {@inheritdoc}
@@ -51,4 +49,5 @@ class BasicConfig extends AbstractConfig
         }
         return true;
     }
+
 }
