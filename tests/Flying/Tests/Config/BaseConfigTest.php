@@ -5,6 +5,8 @@ namespace Flying\Tests\Config;
 use Flying\Config\ConfigurableInterface;
 use Flying\Tests\Config\Fixtures\BasicConfig;
 use Flying\Tests\Config\Fixtures\ConfigAsIterableObject;
+use Flying\Tests\Config\Fixtures\ConfigWithRejectedValidation;
+use Flying\Tests\Config\Fixtures\ConfigWithValidationException;
 use Flying\Tests\Config\Fixtures\InvalidKeyTypeForSimpleConfig;
 
 class BaseConfigTest extends AbstractConfigTest
@@ -22,34 +24,26 @@ class BaseConfigTest extends AbstractConfigTest
         'string_option'  => 'some value',
         'boolean_option' => true,
         'int_option'     => 42,
-        'rejected'       => 'abc',
-        'exception'      => null,
     );
     protected $_configModifications = array(
         'string_option'  => 'modified value',
         'boolean_option' => false,
         'int_option'     => 12345,
-        'rejected'       => 'xyz',
     );
     protected $_configModificationReference = array(
         'string_option'  => 'modified value',
         'boolean_option' => false,
         'int_option'     => 12345,
-        'rejected'       => 'abc',
-        'exception'      => null,
     );
     protected $_configSetModifications = array(
         'string_option'  => 12345,
         'boolean_option' => 12345,
         'int_option'     => 12345,
-        'rejected'       => 12345,
     );
     protected $_configSetReference = array(
         'string_option'  => '12345',
         'boolean_option' => true,
         'int_option'     => 12345,
-        'rejected'       => 'abc',
-        'exception'      => null,
     );
 
     public function testExistenceChecks()
@@ -58,8 +52,6 @@ class BaseConfigTest extends AbstractConfigTest
         $this->assertTrue($object->isConfigExists('string_option'));
         $this->assertTrue($object->isConfigExists('boolean_option'));
         $this->assertTrue($object->isConfigExists('int_option'));
-        $this->assertTrue($object->isConfigExists('rejected'));
-        $this->assertTrue($object->isConfigExists('exception'));
         $this->assertFalse($object->isConfigExists('nonexistent_option'));
         // Test passing invalid argument type for method
         $this->assertFalse($object->isConfigExists(array('int_option')));
@@ -77,8 +69,6 @@ class BaseConfigTest extends AbstractConfigTest
         $this->assertEquals($object->getConfig('string_option'), 'some value');
         $this->assertTrue($object->getConfig('boolean_option'));
         $this->assertEquals($object->getConfig('int_option'), 42);
-        $this->assertEquals($object->getConfig('rejected'), 'abc');
-        $this->assertNull($object->getConfig('exception'));
         $this->assertNull($object->getConfig('nonexistent_option'));
     }
 
@@ -154,14 +144,6 @@ class BaseConfigTest extends AbstractConfigTest
         $object->setConfig('int_option', 123.45);
         $this->assertTrue($object->getConfig('int_option') === 123);
         $this->assertFalse($object->getConfig('int_option') === 123.45);
-
-        // Test setting configuration option that should reject changing its value
-        $object->setConfig('rejected', 12345);
-        $this->assertTrue($object->getConfig('rejected') === 'abc');
-
-        // Test setting configuration option that should raise exception upon its change
-        $this->setExpectedException('\Exception', 'Test exception on checking config option');
-        $object->setConfig('exception', 12345);
     }
 
     public function testSettingInvalidConfigOptions()
@@ -180,6 +162,20 @@ class BaseConfigTest extends AbstractConfigTest
             $object->setConfig($value);
             $this->validateConfig($object->getConfig(), $this->_configReference);
         }
+    }
+
+    public function testSettingRejectedConfigOption()
+    {
+        $object = new ConfigWithRejectedValidation();
+        $object->setConfig('rejected', 'xyz');
+        $this->assertEquals($object->getConfig('rejected'), 'abc');
+    }
+
+    public function testExceptionDuringValidation()
+    {
+        $object = new ConfigWithValidationException();
+        $this->setExpectedException('\Exception', 'Test exception on checking config option');
+        $object->setConfig('exception', 'abc');
     }
 
     public function testSettingMultipleConfigOptions()
@@ -211,13 +207,33 @@ class BaseConfigTest extends AbstractConfigTest
             'string_option'  => 'some value',
             'boolean_option' => true,
             'int_option'     => 12345,
-            'rejected'       => 'abc',
-            'exception'      => null,
         ));
         // Make sure that we didn't modify value of original configuration option
         $this->assertEquals($object->getConfig('int_option'), 42);
 
         // Test modification of multiple config options at once
+        $modified = $object->modifyConfig($config, array(
+            'string_option'  => 'another value',
+            'boolean_option' => false,
+        ));
+        $this->validateConfig($modified, array(
+            'string_option'  => 'another value',
+            'boolean_option' => false,
+            'int_option'     => 42,
+        ));
+
+        // Test modification of multiple config options using object
+        $modified = $object->modifyConfig($config, new ConfigAsIterableObject($this->_configModifications));
+        $this->validateConfig($modified, $this->_configModificationReference);
+
+        // Make sure that we didn't modify value of original configuration options
+        $this->validateConfig($object->getConfig(), $this->_configReference);
+    }
+
+    public function testModificationsWithRejectedValidation()
+    {
+        $object = new ConfigWithRejectedValidation();
+        $config = $object->getConfig();
         $modified = $object->modifyConfig($config, array(
             'string_option'  => 'another value',
             'boolean_option' => false,
@@ -228,15 +244,7 @@ class BaseConfigTest extends AbstractConfigTest
             'boolean_option' => false,
             'int_option'     => 42,
             'rejected'       => 'abc',
-            'exception'      => null,
-        ));
-
-        // Test modification of multiple config options using object
-        $modified = $object->modifyConfig($config, new ConfigAsIterableObject($this->_configModifications));
-        $this->validateConfig($modified, $this->_configModificationReference);
-
-        // Make sure that we didn't modify value of original configuration options
-        $this->validateConfig($object->getConfig(), $this->_configReference);
+        ), get_class($object));
     }
 
     public function testConfigIdEqualsClassId()
@@ -284,7 +292,6 @@ class BaseConfigTest extends AbstractConfigTest
     public function testOnConfigChangeCallback()
     {
         $tests = $this->_configModifications;
-        unset($tests['rejected']);
         $this->runOnConfigChangeCallbackTest($this->getConfigObject(), $tests);
     }
 

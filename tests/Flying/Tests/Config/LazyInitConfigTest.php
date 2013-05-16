@@ -4,6 +4,8 @@ namespace Flying\Tests\Config;
 
 use Flying\Tests\Config\Fixtures\CallbackLog;
 use Flying\Tests\Config\Fixtures\LazyInitConfig;
+use Flying\Tests\Config\Fixtures\LazyInitConfigWithInvalidValues;
+use Flying\Tests\Config\Fixtures\LazyInitConfigWithRejectedValidation;
 
 class LazyInitConfigTest extends AbstractConfigTest
 {
@@ -11,19 +13,16 @@ class LazyInitConfigTest extends AbstractConfigTest
         'string_option'  => 'some value',
         'boolean_option' => true,
         'int_option'     => 42,
-        'rejected'       => 'abc',
     );
     protected $_configModifications = array(
         'string_option'  => 'modified value',
         'boolean_option' => null,
         'int_option'     => 12345,
-        'rejected'       => 'xyz',
     );
     protected $_configExpected = array(
         'string_option'  => 'modified value',
         'boolean_option' => false,
         'int_option'     => 12345,
-        'rejected'       => 'abc',
     );
 
     public function testLazyInitOnGettingSingleConfigValue()
@@ -48,12 +47,24 @@ class LazyInitConfigTest extends AbstractConfigTest
         $object->setCallbackLogger($method, $logger);
         $object->setConfig($this->_configModifications);
         $this->validateConfig($object->getConfig(), $this->_configExpected);
-        // 'rejected' configuration option is not changed by setConfig()
-        // so we should get one lazy initialization - for this option
-        $log = $logger->get();
-        $this->assertEquals(sizeof($log), 1);
-        $log = array_shift($log);
-        $this->assertTrue($log === array($method, 'rejected'));
+        $this->assertEmpty($logger->get());
+    }
+
+    public function testLazyInitWithInvalidValuesShouldResultInValidConfig()
+    {
+        $object = new LazyInitConfigWithInvalidValues();
+        $this->validateConfig($object->getConfig(), array_merge($this->_configReference, array(
+            'should_be_boolean' => true,
+            'should_be_int'     => 123,
+            'should_be_string'  => '12345',
+        )), get_class($object));
+    }
+
+    public function testLazyInitWithRejectedValidationRaisesException()
+    {
+        $object = new LazyInitConfigWithRejectedValidation();
+        $this->setExpectedException('\RuntimeException');
+        $object->getConfig();
     }
 
     /**

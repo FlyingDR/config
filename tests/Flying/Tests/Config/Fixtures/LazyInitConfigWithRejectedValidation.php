@@ -3,9 +3,10 @@
 namespace Flying\Tests\Config\Fixtures;
 
 /**
- * Fixture class to test lazy initialization of configuration options
+ * Fixture class to test attempt to pass invalid configuration option
+ * for lazy initialization
  */
-class LazyInitConfig extends TestConfig
+class LazyInitConfigWithRejectedValidation extends LazyInitConfig
 {
     /**
      * {@inheritdoc}
@@ -14,9 +15,7 @@ class LazyInitConfig extends TestConfig
     {
         parent::initConfig();
         $this->mergeConfig(array(
-            'string_option',
-            'boolean_option',
-            'int_option',
+            'invalid_lazy_init',
         ));
     }
 
@@ -27,14 +26,8 @@ class LazyInitConfig extends TestConfig
     {
         $this->logCallbackCall(__FUNCTION__, func_get_args());
         switch ($name) {
-            case 'string_option':
-                return 'some value';
-                break;
-            case 'boolean_option':
-                return true;
-                break;
-            case 'int_option':
-                return 42;
+            case 'invalid_lazy_init':
+                return 'abc';
                 break;
             default:
                 return parent::lazyConfigInit($name);
@@ -48,20 +41,13 @@ class LazyInitConfig extends TestConfig
     protected function validateConfig($name, &$value)
     {
         switch ($name) {
-            case 'string_option':
-                $value = trim($value);
-                break;
-            case 'boolean_option':
-                $value = (boolean)$value;
-                break;
-            case 'int_option':
-                $value = (int)$value;
+            case 'invalid_lazy_init':
+                return false;
                 break;
             default:
                 return parent::validateConfig($name, $value);
                 break;
         }
-        return true;
     }
 
 }

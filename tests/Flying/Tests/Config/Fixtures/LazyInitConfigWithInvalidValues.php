@@ -3,9 +3,10 @@
 namespace Flying\Tests\Config\Fixtures;
 
 /**
- * Fixture class to test lazy initialization of configuration options
+ * Fixture class to test attempt to pass invalid configuration option
+ * for lazy initialization
  */
-class LazyInitConfig extends TestConfig
+class LazyInitConfigWithInvalidValues extends LazyInitConfig
 {
     /**
      * {@inheritdoc}
@@ -14,9 +15,9 @@ class LazyInitConfig extends TestConfig
     {
         parent::initConfig();
         $this->mergeConfig(array(
-            'string_option',
-            'boolean_option',
-            'int_option',
+            'should_be_boolean',
+            'should_be_int',
+            'should_be_string',
         ));
     }
 
@@ -27,14 +28,14 @@ class LazyInitConfig extends TestConfig
     {
         $this->logCallbackCall(__FUNCTION__, func_get_args());
         switch ($name) {
-            case 'string_option':
-                return 'some value';
+            case 'should_be_boolean':
+                return 'abc';
                 break;
-            case 'boolean_option':
-                return true;
+            case 'should_be_int':
+                return 123.45;
                 break;
-            case 'int_option':
-                return 42;
+            case 'should_be_string':
+                return 12345;
                 break;
             default:
                 return parent::lazyConfigInit($name);
@@ -48,14 +49,14 @@ class LazyInitConfig extends TestConfig
     protected function validateConfig($name, &$value)
     {
         switch ($name) {
-            case 'string_option':
-                $value = trim($value);
-                break;
-            case 'boolean_option':
+            case 'should_be_boolean':
                 $value = (boolean)$value;
                 break;
-            case 'int_option':
+            case 'should_be_int':
                 $value = (int)$value;
+                break;
+            case 'should_be_string':
+                $value = (string)$value;
                 break;
             default:
                 return parent::validateConfig($name, $value);

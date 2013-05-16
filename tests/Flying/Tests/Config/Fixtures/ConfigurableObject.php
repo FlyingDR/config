@@ -19,8 +19,6 @@ class ConfigurableObject extends BaseConfigurableObject
             'string_option',
             'boolean_option',
             'int_option',
-            'rejected',
-            'exception',
         );
     }
 
@@ -44,12 +42,6 @@ class ConfigurableObject extends BaseConfigurableObject
                     case 'int_option':
                         $value = (int)$value;
                         break;
-                    case 'rejected':
-                        return false;
-                        break;
-                    case 'exception':
-                        throw new \Exception('Test exception on checking config option');
-                        break;
                 }
                 return true;
             },
@@ -67,9 +59,6 @@ class ConfigurableObject extends BaseConfigurableObject
                         break;
                     case 'int_option':
                         return 42;
-                        break;
-                    case 'rejected':
-                        return 'abc';
                         break;
                     default:
                         return null;

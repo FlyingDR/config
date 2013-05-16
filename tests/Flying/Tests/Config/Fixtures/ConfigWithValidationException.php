@@ -3,9 +3,9 @@
 namespace Flying\Tests\Config\Fixtures;
 
 /**
- * Basic fixture class
+ * Fixture class to test "exception in validation" behavior
  */
-class BasicConfig extends TestConfig
+class ConfigWithValidationException extends BasicConfig
 {
     /**
      * {@inheritdoc}
@@ -14,9 +14,7 @@ class BasicConfig extends TestConfig
     {
         parent::initConfig();
         $this->mergeConfig(array(
-            'string_option'  => 'some value',
-            'boolean_option' => true,
-            'int_option'     => 42,
+            'exception' => null,
         ));
     }
 
@@ -26,20 +24,13 @@ class BasicConfig extends TestConfig
     protected function validateConfig($name, &$value)
     {
         switch ($name) {
-            case 'string_option':
-                $value = trim($value);
-                break;
-            case 'boolean_option':
-                $value = (boolean)$value;
-                break;
-            case 'int_option':
-                $value = (int)$value;
+            case 'exception':
+                throw new \Exception('Test exception on checking config option');
                 break;
             default:
                 return parent::validateConfig($name, $value);
                 break;
         }
-        return true;
     }
 
 }

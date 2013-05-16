@@ -358,20 +358,27 @@ abstract class AbstractConfig implements ConfigurableInterface
      * Resolve lazy initialization of configuration options
      *
      * @param string $name  OPTIONAL Configuration option to perform lazy initialization of
+     * @throws \RuntimeException
      * @return void
      */
     protected final function resolveLazyConfigInit($name = null)
     {
+        if (!sizeof($this->_configPendingLazyInit)) {
+            return;
+        }
         if ($name !== null) {
-            if (array_key_exists($name, $this->_configPendingLazyInit)) {
-                $this->_config[$name] = $this->lazyConfigInit($name);
+            $options = (array_key_exists($name, $this->_configPendingLazyInit)) ? array($name) : array();
+        } else {
+            $options = array_keys($this->_configPendingLazyInit);
+        }
+        foreach ($options as $name) {
+            $value = $this->lazyConfigInit($name);
+            if ($this->validateConfig($name, $value)) {
+                $this->_config[$name] = $value;
                 unset($this->_configPendingLazyInit[$name]);
+            } else {
+                throw new \RuntimeException('Lazily initialized configuration option "' . $name . '" is not passed validation check');
             }
-        } elseif (sizeof($this->_configPendingLazyInit)) {
-            foreach (array_keys($this->_configPendingLazyInit) as $name) {
-                $this->_config[$name] = $this->lazyConfigInit($name);
-            }
-            $this->_configPendingLazyInit = array();
         }
     }
 
