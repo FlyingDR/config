@@ -1,6 +1,8 @@
 Object configuration implementation
 ===================================
 
+[![Build Status](https://secure.travis-ci.org/FlyingDR/config.png?branch=master)](http://travis-ci.org/FlyingDR/config)
+
 # Overview
 This package provides simple, fast and flexible implementation of object's configuration management.
 
