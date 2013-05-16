@@ -82,13 +82,12 @@ class ConfigInheritanceTest extends AbstractConfigTest
 
     public function testOnConfigChangeCallback()
     {
-        $method = 'onConfigChange';
         $object = new A();
-        $this->runCallbackTest($object, $method, $this->_aReference);
+        $this->runOnConfigChangeCallbackTest($object, $this->_aReference);
         $object = new B();
-        $this->runCallbackTest($object, $method, $this->_bReference);
+        $this->runOnConfigChangeCallbackTest($object, $this->_bReference);
         $object = new C();
-        $this->runCallbackTest($object, $method, $this->_cReference);
+        $this->runOnConfigChangeCallbackTest($object, $this->_cReference);
     }
 
     /**

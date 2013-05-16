@@ -278,7 +278,7 @@ class BaseConfigTest extends AbstractConfigTest
     {
         $tests = $this->_configModifications;
         unset($tests['rejected']);
-        $this->runCallbackTest($this->getConfigObject(), 'onConfigChange', $tests);
+        $this->runOnConfigChangeCallbackTest($this->getConfigObject(), $tests);
     }
 
     /**

@@ -43,16 +43,16 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Run tests of callback method in given class
+     * Run tests of 'onConfigChange' callback method in given class
      *
-     * @param CallbackTrackingInterface $object                                                                        Test object instance
-     * @param string $method                                                                                           Callback method to test
-     * @param array $reference                                                                                         Reference configuration values to set
+     * @param CallbackTrackingInterface $object     Test object instance
+     * @param array $reference
      * @return void
      */
-    protected function runCallbackTest(CallbackTrackingInterface $object, $method, array $reference)
+    protected function runOnConfigChangeCallbackTest(CallbackTrackingInterface $object, array $reference)
     {
         $logger = new CallbackLog();
+        $method = 'onConfigChange';
         $object->setCallbackLogger($method, $logger);
         foreach ($reference as $name => $value) {
             $object->setConfig($name, $value);
