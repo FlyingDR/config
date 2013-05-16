@@ -76,9 +76,7 @@ abstract class AbstractConfig implements ConfigurableInterface
         // This is request for configuration (with possible merging)
         $config = $this->configToArray($config);
         if (!is_array($config)) {
-            $config = $this->_config;
-            $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
-            return ($config);
+            $config = array();
         }
         $result = $this->_config;
         $result[self::CLASS_ID_KEY] = $this->getConfigClassId();
