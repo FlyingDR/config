@@ -4,6 +4,7 @@ namespace Flying\Tests\Config;
 
 use Flying\Config\ConfigurableInterface;
 use Flying\Tests\Config\Fixtures\BasicConfig;
+use Flying\Tests\Config\Fixtures\ConfigAsIterableObject;
 
 class BaseConfigTest extends AbstractConfigTest
 {
@@ -228,6 +229,11 @@ class BaseConfigTest extends AbstractConfigTest
             'rejected'       => 'abc',
             'exception'      => null,
         ));
+
+        // Test modification of multiple config options using object
+        $modified = $object->modifyConfig($config, new ConfigAsIterableObject($this->_configModifications));
+        $this->validateConfig($modified, $this->_configModificationReference);
+
         // Make sure that we didn't modify value of original configuration options
         $this->validateConfig($object->getConfig(), $this->_configReference);
     }
