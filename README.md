@@ -1,8 +1,6 @@
 Object configuration implementation
 ===================================
-
 [![Build Status](https://secure.travis-ci.org/FlyingDR/config.png?branch=master)](http://travis-ci.org/FlyingDR/config)
-
 # Overview
 This package provides simple, fast and flexible implementation of object's configuration management.
 
@@ -38,8 +36,6 @@ Configuration options definition is implemented by overloading ```initConfig()``
 Let's say we're configuring some kind of file-based cache provider:
 
 ```php
-<?php
-
 use Flying\Config\AbstractConfig;
 
 class MyCache extends AbstractConfig
@@ -63,7 +59,6 @@ class MyCache extends AbstractConfig
 
 At this point we're ready to use defined configuration options. We can get some configuration values:
 ```php
-<?php
 if ($this->getConfig('enabled')) {
     // Cache is enabled, calculate hash of cache key
     $method = $this->getConfig('hash_method');
@@ -73,12 +68,10 @@ if ($this->getConfig('enabled')) {
 ```
 or set them one by one
 ```php
-<?php
 $cache->setConfig('enabled', true);
 ```
 or multiple values at once
 ```php
-<?php
 $cache->setConfig(array(
     'path'      => realpath(__DIR__ . '/../../cache'),
     'prefix'    => 'my_',
@@ -88,7 +81,6 @@ but at this point we can't be sure that our configuration is valid at any point 
 ### Configuration validation
 To make configuration valid - we need to implement one more method: ```validateConfig()```. This method receives name and value of configuration option and should decide if configuration option can be changed in this way and, optionally, can normalize given value. For example validator for our example configuration may look like this:
 ```php
-<?php
 protected function validateConfig($name, &$value)
 {
     switch ($name) {
@@ -137,10 +129,53 @@ protected function validateConfig($name, &$value)
 }
 ```
 After implementing this method we can be sure that our configuration will be valid at any time.
+### Lazy configuration initialization
+As of v1.1.0 it is possible to perform lazy (upon request) initialization of configuration options. It is especially helpful in a case if configuration options contains some information that is expensive to initialize by default, e.g. object instances. To initialize some configuration option lazily you need to set its default value to ```null``` and implement option initialization into ```lazyConfigInit()``` method. For example:
+```php
+protected function initConfig()
+{
+    parent::initConfig();
+    $this->mergeConfig(array(
+        'cache'     => null,    // Cache object instance will be here
+    ));
+}
+
+protected function lazyConfigInit($name)
+{
+    switch($name) {
+        case 'cache':
+            return new My\Cache();
+            break;
+        default:
+            return parent::lazyConfigInit($name);
+            break;
+    }
+}
+```
+and later in code:
+```php
+// Create instance of object with 'cache' configuration option
+$object = new My\Object();
+// 'cache' option now remains null internally
+$cache = $object->getConfig('cache');
+// $cache contains instance of My\Cache initialized by request
+$cache->save();
+```
+If your object configuration is planned to be **completely** initialized in a lazy way - you can simplify your configuration initalization:
+```php
+protected function initConfig()
+{
+    parent::initConfig();
+    $this->mergeConfig(array(
+        'cache',        // No values are required
+        'loader',
+        'some_service',
+    ));
+}
+```
 # Partial configuration expansion
 Sometimes it may be necessary to run some object's method with different configuration. This can be done by passing additional configuration options to method itself as additional argument. But in general case we can't be sure that given set of configuration options is complete (and not just 1-2 options) and we know nothing about its validity. This package have great support for handling such situations. Let's take a look at example:
 ```php
-<?php
 /**
  * Save cache entry
  *
@@ -178,14 +213,13 @@ It is often required to extend list of configuration options into child classes.
 It is often necessary to perform some additional tasks upon change of object's configuration. It can be done by overriding ```onConfigChange()``` method. It is called each time after configuration option is changed. Name and new value of configuration option are given as arguments to this method. Good practice for implementation of this method would be to follow same structure as for ```validateConfig()``` method to ensure proper work of application's logic in a case of inherited classes.
 
 ## Use of standalone implementation
-Standalone implementation is provided by [```Flying\Config\ObjectConfig```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/ObjectConfig.php) class and provides same API and base implementation. Fully-functional usage example can be seen into corresponding [test class](https://github.com/FlyingDR/config/blob/master/tests/Flying/Tests/Config/Fixtures/ConfigurableObject.php).
+Standalone implementation is provided by [```Flying\Config\ObjectConfig```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/ObjectConfig.php) class and provides same API and base implementation. Fully-functional usage example can be seen into corresponding [test class](https://github.com/FlyingDR/config/blob/master/tests/Flying/Tests/Config/Fixtures/BaseConfigurableObject.php).
 
 It can be seen that it is generally may be good idea to implement [```Flying\Config\ConfigurableInterface```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/ConfigurableInterface.php) for such objects and proxy all methods to internal configuration object. In this case your object with standalone version of configuration functionality will be functionally equal to objects inherited from [```Flying\Config\AbstractConfig```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/AbstractConfig.php).
 
 ## Implementation details
 For flexibility and performance reasons configuration options are stored and passed as arrays. To distinguish object's configuration from regular arrays - they have additional ```__config__``` entry (defined in [```Flying\Config\ConfigurableInterface```](https://github.com/FlyingDR/config/blob/master/lib/Flying/Config/ConfigurableInterface.php)). Existence of this entry should be taken in mind when, for example, iterating over configuration options list. In this case it may be good idea to either unset this entry from array or skip it during iteration. It is bad idea to drop this entry if you plan to pass this configuration options somewhere because it will cause configuration re-validation on next access that may cause small performance penalty.
 ```php
-<?php
 $config = $this->getConfig();
 foreach($config as $key=>$value) {
     if (\Flying\Config\ConfigurableInterface::CLASS_ID_KEY === $key) {
