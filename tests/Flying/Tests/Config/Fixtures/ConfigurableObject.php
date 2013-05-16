@@ -31,41 +31,50 @@ class ConfigurableObject extends BaseConfigurableObject
     protected function getConfigCallbacks()
     {
         return array(
-            'validateConfig' => function ($name, &$value) {
-                switch ($name) {
-                    case 'string_option':
-                        $value = trim($value);
-                        break;
-                    case 'boolean_option':
-                        $value = (boolean)$value;
-                        break;
-                    case 'int_option':
-                        $value = (int)$value;
-                        break;
-                }
-                return true;
-            },
-            'onConfigChange' => function ($name, $value, $merge) {
-                $this->logCallbackCall('onConfigChange', func_get_args());
-            },
-            'lazyConfigInit' => function ($name) {
-                $this->logCallbackCall('lazyConfigInit', func_get_args());
-                switch ($name) {
-                    case 'string_option':
-                        return 'some value';
-                        break;
-                    case 'boolean_option':
-                        return true;
-                        break;
-                    case 'int_option':
-                        return 42;
-                        break;
-                    default:
-                        return null;
-                        break;
-                }
-            },
+            'validateConfig' => array($this, 'cbValidateConfig'),
+            'onConfigChange' => array($this, 'cbOnConfigChange'),
+            'lazyConfigInit' => array($this, 'cbLazyConfigInit'),
         );
+    }
+
+    public function cbValidateConfig($name, &$value)
+    {
+        switch ($name) {
+            case 'string_option':
+                $value = trim($value);
+                break;
+            case 'boolean_option':
+                $value = (boolean)$value;
+                break;
+            case 'int_option':
+                $value = (int)$value;
+                break;
+        }
+        return true;
+    }
+
+    public function cbOnConfigChange($name, $value, $merge)
+    {
+        $this->logCallbackCall('onConfigChange', func_get_args());
+    }
+
+    public function cbLazyConfigInit($name)
+    {
+        $this->logCallbackCall('lazyConfigInit', func_get_args());
+        switch ($name) {
+            case 'string_option':
+                return 'some value';
+                break;
+            case 'boolean_option':
+                return true;
+                break;
+            case 'int_option':
+                return 42;
+                break;
+            default:
+                return null;
+                break;
+        }
     }
 
 }
