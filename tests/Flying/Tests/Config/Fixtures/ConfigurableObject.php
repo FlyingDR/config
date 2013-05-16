@@ -16,11 +16,11 @@ class ConfigurableObject extends BaseConfigurableObject
     protected function getConfigOptions()
     {
         return array(
-            'string_option'  => 'some value',
-            'boolean_option' => true,
-            'int_option'     => 42,
-            'rejected'       => 'abc',
-            'exception'      => null,
+            'string_option',
+            'boolean_option',
+            'int_option',
+            'rejected',
+            'exception',
         );
     }
 
@@ -55,6 +55,26 @@ class ConfigurableObject extends BaseConfigurableObject
             },
             'onConfigChange' => function ($name, $value, $merge) {
                 $this->logCallbackCall('onConfigChange', func_get_args());
+            },
+            'lazyConfigInit' => function ($name) {
+                $this->logCallbackCall('lazyConfigInit', func_get_args());
+                switch ($name) {
+                    case 'string_option':
+                        return 'some value';
+                        break;
+                    case 'boolean_option':
+                        return true;
+                        break;
+                    case 'int_option':
+                        return 42;
+                        break;
+                    case 'rejected':
+                        return 'abc';
+                        break;
+                    default:
+                        return null;
+                        break;
+                }
             },
         );
     }

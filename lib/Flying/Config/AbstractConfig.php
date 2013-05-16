@@ -13,6 +13,11 @@ abstract class AbstractConfig implements ConfigurableInterface
      */
     private $_config = null;
     /**
+     * List of configuration options that are not yet initialized
+     * @var array
+     */
+    private $_configPendingLazyInit = array();
+    /**
      * TRUE if configuration options bootstrap is being performed, FALSE otherwise
      * @var boolean
      */
@@ -56,12 +61,14 @@ abstract class AbstractConfig implements ConfigurableInterface
             $this->bootstrapConfig();
         }
         if ($config === null) {
+            $this->resolveLazyConfigInit();
             $config = $this->_config;
             $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
             return ($config);
         } elseif (is_string($config)) {
             // This is request for configuration option value
             if (array_key_exists($config, $this->_config)) {
+                $this->resolveLazyConfigInit($config);
                 return ($this->_config[$config]);
             } else {
                 return (null);
@@ -78,6 +85,7 @@ abstract class AbstractConfig implements ConfigurableInterface
         if (!is_array($config)) {
             $config = array();
         }
+        $this->resolveLazyConfigInit();
         $result = $this->_config;
         $result[self::CLASS_ID_KEY] = $this->getConfigClassId();
         foreach ($config as $name => $value) {
@@ -116,6 +124,7 @@ abstract class AbstractConfig implements ConfigurableInterface
                 continue;
             }
             $this->_config[$key] = $value;
+            unset($this->_configPendingLazyInit[$key]);
             $this->onConfigChange($key, $value, false);
         }
     }
@@ -175,6 +184,17 @@ abstract class AbstractConfig implements ConfigurableInterface
     }
 
     /**
+     * Perform "lazy initialization" of configuration option with given name
+     *
+     * @param string $name          Configuration option name
+     * @return mixed
+     */
+    protected function lazyConfigInit($name)
+    {
+        return null;
+    }
+
+    /**
      * Check that given value of configuration option is valid
      *
      * @param string $name          Configuration option name
@@ -231,6 +251,11 @@ abstract class AbstractConfig implements ConfigurableInterface
         }
         $this->_configInBootstrap = true;
         $this->initConfig();
+        foreach ($this->_config as $name => $value) {
+            if ($value === null) {
+                $this->_configPendingLazyInit[$name] = true;
+            }
+        }
         $this->_configInBootstrap = false;
     }
 
@@ -255,6 +280,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      * Merge given configuration options with current configuration options
      *
      * @param array $config     Configuration options to merge
+     * @throws \InvalidArgumentException
      * @return void
      */
     protected final function mergeConfig($config)
@@ -265,12 +291,28 @@ abstract class AbstractConfig implements ConfigurableInterface
         if (!is_array($config)) {
             return;
         }
+        if (is_int(key($config))) {
+            if (array_keys($config) === range(0, sizeof($config) - 1)) {
+                // Configuration is defined as array of keys with lazy initialization
+                $temp = array();
+                foreach ($config as $key) {
+                    if (!is_string($key)) {
+                        throw new \InvalidArgumentException('Configuration option name must be a string');
+                    }
+                    $temp[$key] = null;
+                }
+                $config = $temp;
+            }
+        }
         foreach ($config as $key => $value) {
             if ((!$this->_configInBootstrap) && (!$this->validateConfig($key, $value))) {
                 continue;
             }
             $this->_config[$key] = $value;
             if (!$this->_configInBootstrap) {
+                if ($value === null) {
+                    $this->_configPendingLazyInit[$key] = true;
+                }
                 $this->onConfigChange($key, $value, true);
             }
         }
@@ -310,6 +352,27 @@ abstract class AbstractConfig implements ConfigurableInterface
             $config = array($config => $value);
         }
         return $config;
+    }
+
+    /**
+     * Resolve lazy initialization of configuration options
+     *
+     * @param string $name  OPTIONAL Configuration option to perform lazy initialization of
+     * @return void
+     */
+    protected final function resolveLazyConfigInit($name = null)
+    {
+        if ($name !== null) {
+            if (array_key_exists($name, $this->_configPendingLazyInit)) {
+                $this->_config[$name] = $this->lazyConfigInit($name);
+                unset($this->_configPendingLazyInit[$name]);
+            }
+        } elseif (sizeof($this->_configPendingLazyInit)) {
+            foreach (array_keys($this->_configPendingLazyInit) as $name) {
+                $this->_config[$name] = $this->lazyConfigInit($name);
+            }
+            $this->_configPendingLazyInit = array();
+        }
     }
 
 }

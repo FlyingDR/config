@@ -65,4 +65,37 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * Run tests of 'lazyConfigInit' callback method in given class
+     *
+     * @param CallbackTrackingInterface $object     Test object instance
+     * @param array $reference                      Reference configuration options to use for test
+     * @param boolean $single                       OPTIONAL TRUE to test using retrieval of single configuration option,
+     *                                              FALSE to use complete configuration options retrieval test
+     * @return void
+     */
+    protected function runLazyConfigInitCallbackTest(CallbackTrackingInterface $object, array $reference, $single = true)
+    {
+        $logger = new CallbackLog();
+        $method = 'lazyConfigInit';
+        $object->setCallbackLogger($method, $logger);
+        for ($i = 0; $i < 3; $i++) {
+            // Run configuration options retrieving several times
+            // We expect that lazyConfigInit() is called only once for each option
+            if ($single) {
+                foreach (array_keys($reference) as $name) {
+                    $object->getConfig($name);
+                }
+            } else {
+                $object->getConfig();
+            }
+        }
+        $log = $logger->get();
+        foreach (array_keys($reference) as $name) {
+            $expected = array($method, $name);
+            $actual = array_shift($log);
+            $this->assertTrue($expected === $actual);
+        }
+    }
+
 }

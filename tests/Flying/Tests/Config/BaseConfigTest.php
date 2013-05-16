@@ -5,6 +5,7 @@ namespace Flying\Tests\Config;
 use Flying\Config\ConfigurableInterface;
 use Flying\Tests\Config\Fixtures\BasicConfig;
 use Flying\Tests\Config\Fixtures\ConfigAsIterableObject;
+use Flying\Tests\Config\Fixtures\InvalidKeyTypeForSimpleConfig;
 
 class BaseConfigTest extends AbstractConfigTest
 {
@@ -285,6 +286,13 @@ class BaseConfigTest extends AbstractConfigTest
         $tests = $this->_configModifications;
         unset($tests['rejected']);
         $this->runOnConfigChangeCallbackTest($this->getConfigObject(), $tests);
+    }
+
+    public function testInvalidKeyTypeForSimpleConfigDeclaration()
+    {
+        $this->setExpectedException('\InvalidArgumentException', 'Configuration option name must be a string');
+        $object = new InvalidKeyTypeForSimpleConfig();
+        $object->getConfig();
     }
 
     /**

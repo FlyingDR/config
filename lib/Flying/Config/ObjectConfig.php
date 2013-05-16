@@ -29,6 +29,7 @@ class ObjectConfig extends AbstractConfig
     protected $_callbacks = array(
         'validateConfig' => null, // Custom implementation of validateConfig()
         'onConfigChange' => null, // Custom implementation of onConfigChange()
+        'lazyConfigInit' => null, // Custom implementation of lazyConfigInit()
     );
 
     /**
@@ -142,6 +143,23 @@ class ObjectConfig extends AbstractConfig
                 array($name, $value, $merge)
             );
         }
+    }
+
+    /**
+     * Perform "lazy initialization" of configuration option with given name
+     *
+     * @param string $name          Configuration option name
+     * @return mixed
+     */
+    protected function lazyConfigInit($name)
+    {
+        if ($this->_callbacks['lazyConfigInit']) {
+            return (call_user_func_array(
+                $this->_callbacks['lazyConfigInit'],
+                array($name)
+            ));
+        }
+        return null;
     }
 
 }
