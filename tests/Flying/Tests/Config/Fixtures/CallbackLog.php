@@ -9,6 +9,7 @@ class CallbackLog
 {
     /**
      * Log of calls to callback
+     *
      * @var array
      */
     protected $_log = array();

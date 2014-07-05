@@ -13,11 +13,13 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
 {
     /**
      * Object configuration
+     *
      * @var ObjectConfig
      */
     protected $_config;
     /**
      * Available callback loggers
+     *
      * @var array
      */
     protected $_cbLogs = array();
@@ -44,7 +46,7 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
     /**
      * Check if configuration option with given name is available in object configuration
      *
-     * @param string $name      Configuration option name
+     * @param string $name Configuration option name
      * @return boolean
      */
     public function isConfigExists($name)
@@ -98,7 +100,7 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
     /**
      * Set logger for defined method
      *
-     * @param string $method        Method name
+     * @param string $method Method name
      * @param CallbackLog $logger
      * @return void
      */
@@ -110,8 +112,8 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
     /**
      * Log call to callback
      *
-     * @param string $method    Method name
-     * @param array $args       Method call arguments
+     * @param string $method Method name
+     * @param array $args    Method call arguments
      * @return void
      */
     protected function logCallbackCall($method, array $args)

@@ -13,6 +13,7 @@ class BaseConfigTest extends AbstractConfigTest
 {
     /**
      * List of objects that can be used to pass config modifications to object
+     *
      * @var array
      */
     protected $_configObjects = array(

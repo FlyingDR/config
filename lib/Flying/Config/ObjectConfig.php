@@ -9,24 +9,28 @@ class ObjectConfig extends AbstractConfig
 {
     /**
      * Owner of this configuration object
+     *
      * @var object
      */
-    protected $_owner = null;
+    protected $owner = null;
     /**
      * Configuration options for to serve by this configuration object
+     *
      * @var array
      */
-    protected $_options = array();
+    protected $options = array();
     /**
      * Configuration class Id for this configuration object
+     *
      * @var string
      */
-    protected $_classId = null;
+    protected $classId = null;
     /**
      * List of registered callbacks for customizing configuration object behavior
+     *
      * @var array
      */
-    protected $_callbacks = array(
+    protected $callbacks = array(
         'validateConfig' => null, // Custom implementation of validateConfig()
         'onConfigChange' => null, // Custom implementation of onConfigChange()
         'lazyConfigInit' => null, // Custom implementation of lazyConfigInit()
@@ -35,10 +39,10 @@ class ObjectConfig extends AbstractConfig
     /**
      * Class constructor
      *
-     * @param object $owner         Owner of this configuration object
-     * @param array $options        List of configuration options to serve (@see AbstractConfig::initConfig for description)
-     * @param array $callbacks      OPTIONAL List of callbacks to customize configuration object behavior
-     * @param array $config         OPTIONAL Configuration options to initialize class with
+     * @param object $owner    Owner of this configuration object
+     * @param array $options   List of configuration options to serve (@see AbstractConfig::initConfig for description)
+     * @param array $callbacks OPTIONAL List of callbacks to customize configuration object behavior
+     * @param array $config    OPTIONAL Configuration options to initialize class with
      * @throws \InvalidArgumentException
      * @return ObjectConfig
      */
@@ -48,20 +52,20 @@ class ObjectConfig extends AbstractConfig
         if (!is_array($options)) {
             throw new \InvalidArgumentException('Configuration options list must be an array');
         }
-        $this->_options = $options;
+        $this->options = $options;
         if (is_array($callbacks)) {
             foreach ($callbacks as $type => $callback) {
-                if (!array_key_exists($type, $this->_callbacks)) {
+                if (!array_key_exists($type, $this->callbacks)) {
                     throw new \InvalidArgumentException('Unknown customization callback type: ' . $type);
                 }
                 // If method name is passed instead of callback - create callback from it
                 if (is_string($callback)) {
-                    $callback = array($this->_owner, $callback);
+                    $callback = array($this->owner, $callback);
                 }
                 if (!is_callable($callback)) {
                     throw new \InvalidArgumentException('Non-callable callback is given for customization callback type: ' . $type);
                 }
-                $this->_callbacks[$type] = $callback;
+                $this->callbacks[$type] = $callback;
             }
         }
         $this->bootstrapConfig();
@@ -71,7 +75,7 @@ class ObjectConfig extends AbstractConfig
     /**
      * Set owner of this configuration object
      *
-     * @param object $owner     Owner of this configuration object
+     * @param object $owner Owner of this configuration object
      * @throws \InvalidArgumentException
      * @return void
      */
@@ -80,8 +84,8 @@ class ObjectConfig extends AbstractConfig
         if (!is_object($owner)) {
             throw new \InvalidArgumentException('Given owner of configuration object is not an object');
         }
-        $this->_owner = $owner;
-        $this->_classId = null; // Reset class Id because we have new owner
+        $this->owner = $owner;
+        $this->classId = null; // Reset class Id because we have new owner
     }
 
     /**
@@ -91,10 +95,10 @@ class ObjectConfig extends AbstractConfig
      */
     protected function getConfigClassId()
     {
-        if (!$this->_classId) {
-            $this->_classId = get_class($this->_owner);
+        if (!$this->classId) {
+            $this->classId = get_class($this->owner);
         }
-        return ($this->_classId);
+        return ($this->classId);
     }
 
     /**
@@ -105,21 +109,21 @@ class ObjectConfig extends AbstractConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig($this->_options);
+        $this->mergeConfig($this->options);
     }
 
     /**
      * Check that given value of configuration option is valid
      *
-     * @param string $name          Configuration option name
-     * @param mixed $value          Option value (passed by reference)
+     * @param string $name Configuration option name
+     * @param mixed $value Option value (passed by reference)
      * @return boolean
      */
     protected function validateConfig($name, &$value)
     {
-        if ($this->_callbacks['validateConfig']) {
+        if ($this->callbacks['validateConfig']) {
             return (call_user_func_array(
-                $this->_callbacks['validateConfig'],
+                $this->callbacks['validateConfig'],
                 array($name, &$value)
             ));
         }
@@ -137,9 +141,9 @@ class ObjectConfig extends AbstractConfig
      */
     protected function onConfigChange($name, $value, $merge)
     {
-        if ($this->_callbacks['onConfigChange']) {
+        if ($this->callbacks['onConfigChange']) {
             call_user_func_array(
-                $this->_callbacks['onConfigChange'],
+                $this->callbacks['onConfigChange'],
                 array($name, $value, $merge)
             );
         }
@@ -148,18 +152,17 @@ class ObjectConfig extends AbstractConfig
     /**
      * Perform "lazy initialization" of configuration option with given name
      *
-     * @param string $name          Configuration option name
+     * @param string $name Configuration option name
      * @return mixed
      */
     protected function lazyConfigInit($name)
     {
-        if ($this->_callbacks['lazyConfigInit']) {
+        if ($this->callbacks['lazyConfigInit']) {
             return (call_user_func_array(
-                $this->_callbacks['lazyConfigInit'],
+                $this->callbacks['lazyConfigInit'],
                 array($name)
             ));
         }
         return null;
     }
-
 }

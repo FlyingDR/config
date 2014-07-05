@@ -16,7 +16,7 @@ interface ConfigurableInterface
     /**
      * Check if configuration option with given name is available in object configuration
      *
-     * @param string $name      Configuration option name
+     * @param string $name Configuration option name
      * @return boolean
      */
     public function isConfigExists($name);
@@ -54,5 +54,4 @@ interface ConfigurableInterface
      * @return array
      */
     public function modifyConfig($config, $modification, $value = null);
-
 }

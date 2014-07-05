@@ -19,9 +19,9 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * Validate configuration
      *
-     * @param array $received   Received configuration
-     * @param array $expected   Expected configuration
-     * @param string $classId   OPTIONAL Expected class Id value into received configuration
+     * @param array $received Received configuration
+     * @param array $expected Expected configuration
+     * @param string $classId OPTIONAL Expected class Id value into received configuration
      * @return void
      */
     protected function validateConfig($received, $expected, $classId = null)
@@ -45,7 +45,7 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * Run tests of 'onConfigChange' callback method in given class
      *
-     * @param CallbackTrackingInterface $object     Test object instance
+     * @param CallbackTrackingInterface $object Test object instance
      * @param array $reference
      * @return void
      */

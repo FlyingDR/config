@@ -9,6 +9,7 @@ class ConfigWithRejectedValidation extends BasicConfig
 {
     /**
      * "Modification rejected" status
+     *
      * @var boolean
      */
     protected $_reject = true;

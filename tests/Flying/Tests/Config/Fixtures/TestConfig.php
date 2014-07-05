@@ -11,6 +11,7 @@ class TestConfig extends AbstractConfig implements CallbackTrackingInterface
 {
     /**
      * Available callback loggers
+     *
      * @var array
      */
     protected $_cbLogs = array();
@@ -18,7 +19,7 @@ class TestConfig extends AbstractConfig implements CallbackTrackingInterface
     /**
      * Set logger for defined method
      *
-     * @param string $method        Method name
+     * @param string $method Method name
      * @param CallbackLog $logger
      * @return void
      */
@@ -30,8 +31,8 @@ class TestConfig extends AbstractConfig implements CallbackTrackingInterface
     /**
      * Log call to callback
      *
-     * @param string $method    Method name
-     * @param array $args       Method call arguments
+     * @param string $method Method name
+     * @param array $args    Method call arguments
      * @return void
      */
     protected function logCallbackCall($method, array $args)

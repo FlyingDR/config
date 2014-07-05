@@ -9,38 +9,42 @@ abstract class AbstractConfig implements ConfigurableInterface
 {
     /**
      * Configuration options
+     *
      * @var array
      */
-    private $_config = null;
+    private $config = null;
     /**
      * List of configuration options that are not yet initialized
+     *
      * @var array
      */
-    private $_configPendingLazyInit = array();
+    private $configPendingLazyInit = array();
     /**
      * TRUE if configuration options bootstrap is being performed, FALSE otherwise
+     *
      * @var boolean
      */
-    private $_configInBootstrap = false;
+    private $configInBootstrap = false;
     /**
      * Mapping table between class name and its configuration options set
+     *
      * @var array
      */
-    private static $_configClassesMap = array();
+    private static $configClassesMap = array();
 
     /**
      * Check if configuration option with given name is available in object configuration
      *
-     * @param string $name      Configuration option name
+     * @param string $name Configuration option name
      * @return boolean
      */
     public final function isConfigExists($name)
     {
-        if (!is_array($this->_config)) {
+        if (!is_array($this->config)) {
             $this->bootstrapConfig();
         }
         if ((is_string($name)) && ($name !== self::CLASS_ID_KEY)) {
-            return (array_key_exists($name, $this->_config));
+            return (array_key_exists($name, $this->config));
         }
         return (false);
     }
@@ -57,19 +61,19 @@ abstract class AbstractConfig implements ConfigurableInterface
      */
     public function getConfig($config = null)
     {
-        if (!is_array($this->_config)) {
+        if (!is_array($this->config)) {
             $this->bootstrapConfig();
         }
         if ($config === null) {
             $this->resolveLazyConfigInit();
-            $config = $this->_config;
+            $config = $this->config;
             $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
             return ($config);
         } elseif (is_string($config)) {
             // This is request for configuration option value
-            if (array_key_exists($config, $this->_config)) {
+            if (array_key_exists($config, $this->config)) {
                 $this->resolveLazyConfigInit($config);
-                return ($this->_config[$config]);
+                return ($this->config[$config]);
             } else {
                 return (null);
             }
@@ -86,7 +90,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             $config = array();
         }
         $this->resolveLazyConfigInit();
-        $result = $this->_config;
+        $result = $this->config;
         $result[self::CLASS_ID_KEY] = $this->getConfigClassId();
         foreach ($config as $name => $value) {
             if ((!array_key_exists($name, $result)) || ($name == self::CLASS_ID_KEY)) {
@@ -109,7 +113,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      */
     public final function setConfig($config, $value = null)
     {
-        if (!is_array($this->_config)) {
+        if (!is_array($this->config)) {
             $this->bootstrapConfig();
         }
         $config = $this->configToArray($config, $value, true);
@@ -117,14 +121,14 @@ abstract class AbstractConfig implements ConfigurableInterface
             return;
         }
         foreach ($config as $key => $value) {
-            if (!array_key_exists($key, $this->_config)) {
+            if (!array_key_exists($key, $this->config)) {
                 continue;
             }
             if (!$this->validateConfig($key, $value)) {
                 continue;
             }
-            $this->_config[$key] = $value;
-            unset($this->_configPendingLazyInit[$key]);
+            $this->config[$key] = $value;
+            unset($this->configPendingLazyInit[$key]);
             $this->onConfigChange($key, $value, false);
         }
     }
@@ -183,13 +187,13 @@ abstract class AbstractConfig implements ConfigurableInterface
      */
     protected function initConfig()
     {
-        $this->_config = array();
+        $this->config = array();
     }
 
     /**
      * Perform "lazy initialization" of configuration option with given name
      *
-     * @param string $name          Configuration option name
+     * @param string $name Configuration option name
      * @return mixed
      */
     protected function lazyConfigInit($name)
@@ -221,8 +225,8 @@ abstract class AbstractConfig implements ConfigurableInterface
      * }
      * </code>
      *
-     * @param string $name          Configuration option name
-     * @param mixed $value          Option value (passed by reference)
+     * @param string $name Configuration option name
+     * @param mixed $value Option value (passed by reference)
      * @return boolean
      */
     protected function validateConfig($name, &$value)
@@ -253,17 +257,17 @@ abstract class AbstractConfig implements ConfigurableInterface
      */
     protected final function bootstrapConfig()
     {
-        if ((is_array($this->_config)) || ($this->_configInBootstrap)) {
+        if ((is_array($this->config)) || ($this->configInBootstrap)) {
             return;
         }
-        $this->_configInBootstrap = true;
+        $this->configInBootstrap = true;
         $this->initConfig();
-        foreach ($this->_config as $name => $value) {
+        foreach ($this->config as $name => $value) {
             if ($value === null) {
-                $this->_configPendingLazyInit[$name] = true;
+                $this->configPendingLazyInit[$name] = true;
             }
         }
-        $this->_configInBootstrap = false;
+        $this->configInBootstrap = false;
     }
 
     /**
@@ -274,25 +278,25 @@ abstract class AbstractConfig implements ConfigurableInterface
     protected function getConfigClassId()
     {
         $class = get_class($this);
-        if (!array_key_exists($class, self::$_configClassesMap)) {
+        if (!array_key_exists($class, self::$configClassesMap)) {
             // Determine which class actually defines configuration for given class
             $reflection = new \ReflectionClass($class);
             $id = $reflection->getMethod('initConfig')->getDeclaringClass()->getName();
-            self::$_configClassesMap[$class] = $id;
+            self::$configClassesMap[$class] = $id;
         }
-        return (self::$_configClassesMap[$class]);
+        return (self::$configClassesMap[$class]);
     }
 
     /**
      * Merge given configuration options with current configuration options
      *
-     * @param array $config     Configuration options to merge
+     * @param array $config Configuration options to merge
      * @throws \InvalidArgumentException
      * @return void
      */
     protected final function mergeConfig($config)
     {
-        if (!is_array($this->_config)) {
+        if (!is_array($this->config)) {
             $this->bootstrapConfig();
         }
         if (!is_array($config)) {
@@ -312,13 +316,13 @@ abstract class AbstractConfig implements ConfigurableInterface
             }
         }
         foreach ($config as $key => $value) {
-            if ((!$this->_configInBootstrap) && (!$this->validateConfig($key, $value))) {
+            if ((!$this->configInBootstrap) && (!$this->validateConfig($key, $value))) {
                 continue;
             }
-            $this->_config[$key] = $value;
-            if (!$this->_configInBootstrap) {
+            $this->config[$key] = $value;
+            if (!$this->configInBootstrap) {
                 if ($value === null) {
-                    $this->_configPendingLazyInit[$key] = true;
+                    $this->configPendingLazyInit[$key] = true;
                 }
                 $this->onConfigChange($key, $value, true);
             }
@@ -328,9 +332,9 @@ abstract class AbstractConfig implements ConfigurableInterface
     /**
      * Attempt to convert given configuration information to array
      *
-     * @param mixed $config     Value to convert to array
-     * @param mixed $value      OPTIONAL Array entry value for inline array entry
-     * @param boolean $inline   OPTIONAL TRUE to allow treating given string values as array entry
+     * @param mixed $config   Value to convert to array
+     * @param mixed $value    OPTIONAL Array entry value for inline array entry
+     * @param boolean $inline OPTIONAL TRUE to allow treating given string values as array entry
      * @return mixed
      */
     protected function configToArray($config, $value = null, $inline = false)
@@ -346,7 +350,7 @@ abstract class AbstractConfig implements ConfigurableInterface
                 $config = $temp;
             } elseif ($config instanceof \ArrayAccess) {
                 $temp = array();
-                foreach ($this->_config as $k => $v) {
+                foreach ($this->config as $k => $v) {
                     if (($k === ConfigurableInterface::CLASS_ID_KEY) || (!$config->offsetExists($k))) {
                         continue;
                     }
@@ -364,29 +368,28 @@ abstract class AbstractConfig implements ConfigurableInterface
     /**
      * Resolve lazy initialization of configuration options
      *
-     * @param string $name  OPTIONAL Configuration option to perform lazy initialization of
+     * @param string $name OPTIONAL Configuration option to perform lazy initialization of
      * @throws \RuntimeException
      * @return void
      */
     protected final function resolveLazyConfigInit($name = null)
     {
-        if (!sizeof($this->_configPendingLazyInit)) {
+        if (!sizeof($this->configPendingLazyInit)) {
             return;
         }
         if ($name !== null) {
-            $options = (array_key_exists($name, $this->_configPendingLazyInit)) ? array($name) : array();
+            $options = (array_key_exists($name, $this->configPendingLazyInit)) ? array($name) : array();
         } else {
-            $options = array_keys($this->_configPendingLazyInit);
+            $options = array_keys($this->configPendingLazyInit);
         }
         foreach ($options as $name) {
             $value = $this->lazyConfigInit($name);
             if ($this->validateConfig($name, $value)) {
-                $this->_config[$name] = $value;
-                unset($this->_configPendingLazyInit[$name]);
+                $this->config[$name] = $value;
+                unset($this->configPendingLazyInit[$name]);
             } else {
                 throw new \RuntimeException('Lazily initialized configuration option "' . $name . '" is not passed validation check');
             }
         }
     }
-
 }
