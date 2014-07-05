@@ -168,18 +168,21 @@ abstract class AbstractConfig implements ConfigurableInterface
     /**
      * Initialize list of configuration options
      *
+     * This method is mean to be overridden to provide configuration options set.
+     * To allow inheritance of configuration options sets across several levels
+     * of inherited classes - this method in nested classes should look like this:
+     *
+     * <code>
+     * parent::initConfig();
+     * $this->mergeConfig(array(
+     *     'option' => 'default value',
+     * ));
+     * </code>
+     *
      * @return void
      */
     protected function initConfig()
     {
-        // This method is mean to be overridden to provide configuration options set.
-        // To allow inheritance of configuration options sets across several levels
-        // of inherited classes - this method in nested classes should look like this:
-        //
-        // parent::initConfig();
-        // $this->mergeConfig(array(
-        //     'option' => 'default value',
-        // ));
         $this->_config = array();
     }
 
@@ -197,35 +200,41 @@ abstract class AbstractConfig implements ConfigurableInterface
     /**
      * Check that given value of configuration option is valid
      *
+     * This method is mean to be overridden in a case if additional validation
+     * of configuration option value should be performed before using it
+     * Method should validate and, if required, normalize given value
+     * of configuration option and return true if option can be used and false if not
+     * It is important that this method will be:
+     * - as simple as possible to optimize performance
+     * - will not call other methods that attempts to modify or merge object configuration
+     * to avoid infinite loop
+     * Normally this method should look like this:
+     *
+     * <code>
+     * switch($name) {
+     *      case 'option':
+     *          // $value validation and normalization code
+     *          break;
+     *      default:
+     *          return parent::validateConfig($name, $value);
+     *          break;
+     * }
+     * </code>
+     *
      * @param string $name          Configuration option name
      * @param mixed $value          Option value (passed by reference)
      * @return boolean
      */
     protected function validateConfig($name, &$value)
     {
-        // This method is mean to be overridden in a case if additional validation
-        // of configuration option value should be performed before using it
-        // Method should validate and, if required, normalize given value
-        // of configuration option and return true if option can be used and false if not
-        // It is important that this method will be:
-        // - as simple as possible to optimize performance
-        // - will not call other methods that attempts to modify or merge object configuration
-        //   to avoid infinite loop
-        // Normally this method should look like this:
-        //
-        // switch($name) {
-        //     case 'option':
-        //         // $value validation and normalization code
-        //         break;
-        //     default:
-        //         return parent::validateConfig($name, $value);
-        //         break;
-        // }
         return (true);
     }
 
     /**
      * Perform required operations when configuration option value is changed
+     *
+     * This method is mean to be overridden in a case if some kind of additional logic
+     * is required to be performed upon setting value of configuration option.
      *
      * @param string $name          Configuration option name
      * @param mixed $value          Configuration option value
@@ -235,8 +244,6 @@ abstract class AbstractConfig implements ConfigurableInterface
      */
     protected function onConfigChange($name, $value, $merge)
     {
-        // This method is mean to be overridden in a case if some kind of additional logic
-        // is required to be performed upon setting value of configuration option.
     }
 
     /**
