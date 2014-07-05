@@ -12,25 +12,25 @@ class ObjectConfig extends AbstractConfig
      *
      * @var object
      */
-    protected $owner = null;
+    private $owner = null;
     /**
      * Configuration options for to serve by this configuration object
      *
      * @var array
      */
-    protected $options = array();
+    private $options = array();
     /**
      * Configuration class Id for this configuration object
      *
      * @var string
      */
-    protected $classId = null;
+    private $classId = null;
     /**
      * List of registered callbacks for customizing configuration object behavior
      *
      * @var array
      */
-    protected $callbacks = array(
+    private $callbacks = array(
         'validateConfig' => null, // Custom implementation of validateConfig()
         'onConfigChange' => null, // Custom implementation of onConfigChange()
         'lazyConfigInit' => null, // Custom implementation of lazyConfigInit()
