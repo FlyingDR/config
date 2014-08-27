@@ -250,6 +250,25 @@ class BaseConfigTest extends AbstractConfigTest
         ), get_class($object));
     }
 
+    public function testEmptyModification()
+    {
+        $object = $this->getConfigObject();
+        $config = $object->getConfig();
+        $modified = $object->modifyConfig($config, null, 123);
+        $this->assertEquals($config, $modified);
+    }
+
+    public function testModificationWithUnavailableOptions()
+    {
+        $object = $this->getConfigObject();
+        $config = $object->getConfig();
+        $modified = $object->modifyConfig($config, array(
+            'abc' => 123,
+            'xyz' => 456,
+        ));
+        $this->assertEquals($config, $modified);
+    }
+
     /**
      * @expectedException \RuntimeException
      */

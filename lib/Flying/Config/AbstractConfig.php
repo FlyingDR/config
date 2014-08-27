@@ -141,7 +141,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             return $config;
         }
         foreach ($modification as $name => $value) {
-            if ($name == self::CLASS_ID_KEY) {
+            if ((!array_key_exists($name, $this->config)) || ($name === self::CLASS_ID_KEY)) {
                 continue;
             }
             if ($this->validateConfig($name, $value)) {
