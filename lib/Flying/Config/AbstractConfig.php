@@ -277,18 +277,16 @@ abstract class AbstractConfig implements ConfigurableInterface
         if (!is_array($this->config)) {
             $this->bootstrapConfig();
         }
-        if (is_int(key($config))) {
-            if (array_keys($config) === range(0, sizeof($config) - 1)) {
-                // Configuration is defined as array of keys with lazy initialization
-                $temp = array();
-                foreach ($config as $key) {
-                    if (!is_string($key)) {
-                        throw new \InvalidArgumentException('Configuration option name must be a string');
-                    }
-                    $temp[$key] = null;
+        if ((is_int(key($config))) && (array_keys($config) === range(0, sizeof($config) - 1))) {
+            // Configuration is defined as array of keys with lazy initialization
+            $temp = array();
+            foreach ($config as $key) {
+                if (!is_string($key)) {
+                    throw new \InvalidArgumentException('Configuration option name must be a string');
                 }
-                $config = $temp;
+                $temp[$key] = null;
             }
+            $config = $temp;
         }
         foreach ($config as $key => $value) {
             if ((!$this->configInBootstrap) && (!$this->validateConfig($key, $value))) {
