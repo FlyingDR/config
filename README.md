@@ -78,6 +78,9 @@ $cache->setConfig(array(
 ));
 ```
 but at this point we can't be sure that our configuration is valid at any point of time. To achieve this - it is necessary to implement configuration validator.
+
+**IMPORTANT**: Starting from version 2.0.0 only scalar configuration options can be passed to ```initConfig()``` because configuration initialization results are now cached for better performance.
+
 ### Configuration validation
 To make configuration valid - we need to implement one more method: ```validateConfig()```. This method receives name and value of configuration option and should decide if configuration option can be changed in this way and, optionally, can normalize given value. For example validator for our example configuration may look like this:
 ```php
@@ -230,5 +233,5 @@ foreach($config as $key => $value) {
     // ...
 }
 ```
-If you need to avoid getting this additional entry - you can pass **false** as second argument to ```getConfig()``` method (only in 2.x version). However it is usually bad idea to drop this entry if you plan to pass this configuration options somewhere because it will cause configuration re-validation on next access that may cause small performance penalty.
+If you need to avoid getting this additional entry - you can pass ```false``` as second argument to ```getConfig()``` method (only in 2.x version). However it is usually bad idea to drop this entry if you plan to pass this configuration options somewhere because it will cause configuration re-validation on next access that may cause small performance penalty.
 Another decision made for performance reasons: arrays that contains configuration id key are automatically treated as valid and **not** re-validated. It is your obligation to **not modify** configuration arrays by hands, you need to use ```modifyConfig()``` method instead.
