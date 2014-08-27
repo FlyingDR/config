@@ -58,19 +58,21 @@ abstract class AbstractConfig implements ConfigurableInterface
         if (!is_array($this->config)) {
             $this->bootstrapConfig();
         }
-        if ($config === null) {
-            $this->resolveLazyConfigInit();
-            $config = $this->config;
-            $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
-            return $config;
-        } elseif (is_string($config)) {
+        if (is_string($config)) {
             // This is request for configuration option value
             if (array_key_exists($config, $this->config)) {
-                $this->resolveLazyConfigInit($config);
+                if (array_key_exists($config, $this->configPendingLazyInit)) {
+                    $this->resolveLazyConfigInit($config);
+                }
                 return $this->config[$config];
             } else {
                 return null;
             }
+        } elseif ($config === null) {
+            $this->resolveLazyConfigInit();
+            $config = $this->config;
+            $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
+            return $config;
         } elseif ((is_array($config)) &&
             (array_key_exists(self::CLASS_ID_KEY, $config)) && // This is repetitive call to getConfig()
             ($config[self::CLASS_ID_KEY] === $this->getConfigClassId())
@@ -221,8 +223,8 @@ abstract class AbstractConfig implements ConfigurableInterface
      * This method is mean to be overridden in a case if some kind of additional logic
      * is required to be performed upon setting value of configuration option.
      *
-     * @param string $name          Configuration option name
-     * @param mixed $value          Configuration option value
+     * @param string $name Configuration option name
+     * @param mixed $value Configuration option value
      * @return void
      */
     protected function onConfigChange($name, $value)
