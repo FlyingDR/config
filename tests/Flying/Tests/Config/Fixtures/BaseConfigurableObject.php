@@ -55,18 +55,11 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
     }
 
     /**
-     * Get object's configuration or configuration option with given name
-     * If argument is passed as string - value of configuration option with this name will be returned
-     * If argument is some kind of configuration options set - it will be merged with current object's configuration and returned
-     * If no argument is passed - current object's configuration will be returned
-     *
-     * @param string|array|null $config     OPTIONAL Option name to get or configuration options
-     *                                      to override default object's configuration.
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function getConfig($config = null)
+    public function getConfig($config = null, $export = false)
     {
-        return ($this->_config->getConfig($config));
+        return ($this->_config->getConfig($config, $export));
     }
 
     /**

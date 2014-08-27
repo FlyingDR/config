@@ -89,6 +89,26 @@ class BaseConfigTest extends AbstractConfigTest
         $this->assertTrue($c1 === $c2);
     }
 
+    public function testGettingExportedConfig()
+    {
+        $object = $this->getConfigObject();
+
+        $config = $object->getConfig(null, false);
+        $this->assertArrayHasKey(ConfigurableInterface::CLASS_ID_KEY, $config);
+
+        $modified = $object->getConfig($this->_configModifications, false);
+        $this->assertArrayHasKey(ConfigurableInterface::CLASS_ID_KEY, $modified);
+        $this->validateConfig($modified, $this->_configModifications);
+
+        $exported = $object->getConfig(null, true);
+        $this->assertArrayNotHasKey(ConfigurableInterface::CLASS_ID_KEY, $exported);
+        $this->assertEquals($exported, $this->_configReference);
+
+        $modified = $object->getConfig($this->_configModifications, true);
+        $this->assertArrayNotHasKey(ConfigurableInterface::CLASS_ID_KEY, $modified);
+        $this->assertEquals($modified, $this->_configModifications);
+    }
+
     public function testPassingInvalidValuesAsConfigModifications()
     {
         $object = $this->getConfigObject();

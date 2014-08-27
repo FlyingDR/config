@@ -53,7 +53,7 @@ abstract class AbstractConfig implements ConfigurableInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfig($config = null)
+    public function getConfig($config = null, $export = false)
     {
         if (!is_array($this->config)) {
             $this->bootstrapConfig();
@@ -71,7 +71,9 @@ abstract class AbstractConfig implements ConfigurableInterface
         } elseif ($config === null) {
             $this->resolveLazyConfigInit();
             $config = $this->config;
-            $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
+            if (!$export) {
+                $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
+            }
             return $config;
         } elseif ((is_array($config)) &&
             (array_key_exists(self::CLASS_ID_KEY, $config)) && // This is repetitive call to getConfig()
@@ -87,7 +89,9 @@ abstract class AbstractConfig implements ConfigurableInterface
         }
         $this->resolveLazyConfigInit();
         $result = $this->config;
-        $result[self::CLASS_ID_KEY] = $this->getConfigClassId();
+        if (!$export) {
+            $result[self::CLASS_ID_KEY] = $this->getConfigClassId();
+        }
         foreach ($config as $name => $value) {
             if ((!array_key_exists($name, $result)) || ($name === self::CLASS_ID_KEY)) {
                 continue;
