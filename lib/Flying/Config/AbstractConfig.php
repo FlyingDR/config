@@ -73,7 +73,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             }
         } elseif ((is_array($config)) &&
             (array_key_exists(self::CLASS_ID_KEY, $config)) && // This is repetitive call to getConfig()
-            ($config[self::CLASS_ID_KEY] == $this->getConfigClassId())
+            ($config[self::CLASS_ID_KEY] === $this->getConfigClassId())
         ) // Only classes with same configuration class Id can share configurations
         {
             return $config;
@@ -87,7 +87,7 @@ abstract class AbstractConfig implements ConfigurableInterface
         $result = $this->config;
         $result[self::CLASS_ID_KEY] = $this->getConfigClassId();
         foreach ($config as $name => $value) {
-            if ((!array_key_exists($name, $result)) || ($name == self::CLASS_ID_KEY)) {
+            if ((!array_key_exists($name, $result)) || ($name === self::CLASS_ID_KEY)) {
                 continue;
             }
             if ($this->validateConfig($name, $value)) {
@@ -132,7 +132,7 @@ abstract class AbstractConfig implements ConfigurableInterface
         // if getConfig() is overridden and calls modifyConfig() by itself
         if ((!is_array($config)) ||
             (!array_key_exists(self::CLASS_ID_KEY, $config)) ||
-            ($config[self::CLASS_ID_KEY] != $this->getConfigClassId())
+            ($config[self::CLASS_ID_KEY] !== $this->getConfigClassId())
         ) {
             $config = $this->getConfig($config);
         }
@@ -141,7 +141,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             return $config;
         }
         foreach ($modification as $name => $value) {
-            if ((!array_key_exists($name, $this->config)) || ($name === self::CLASS_ID_KEY)) {
+            if (!array_key_exists($name, $this->config)) {
                 continue;
             }
             if ($this->validateConfig($name, $value)) {
@@ -280,12 +280,13 @@ abstract class AbstractConfig implements ConfigurableInterface
             $c = $class;
             do {
                 if (($reflection->getMethod('initConfig')->getDeclaringClass()->getName() === $c) ||
-                    ($reflection->getMethod('validateConfig')->getDeclaringClass()->getName() === $c)) {
+                    ($reflection->getMethod('validateConfig')->getDeclaringClass()->getName() === $c)
+                ) {
                     break;
                 }
                 $reflection = $reflection->getParentClass();
                 $c = $reflection->getName();
-            } while($reflection);
+            } while ($reflection);
             self::$configCache['classes_map'][$class] = $reflection->getName();
         }
         return self::$configCache['classes_map'][$class];
@@ -342,11 +343,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             if (is_callable(array($config, 'toArray'))) {
                 $config = $config->toArray();
             } elseif ($config instanceof \Iterator) {
-                $temp = array();
-                foreach ($config as $k => $v) {
-                    $temp[$k] = $v;
-                }
-                $config = $temp;
+                $config = iterator_to_array($config, true);
             } elseif ($config instanceof \ArrayAccess) {
                 $temp = array();
                 foreach ($this->config as $k => $v) {
