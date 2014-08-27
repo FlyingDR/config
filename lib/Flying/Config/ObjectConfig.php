@@ -44,7 +44,6 @@ class ObjectConfig extends AbstractConfig
      * @param array $callbacks OPTIONAL List of callbacks to customize configuration object behavior
      * @param array $config    OPTIONAL Configuration options to initialize class with
      * @throws \InvalidArgumentException
-     * @return ObjectConfig
      */
     public function __construct($owner, $options, $callbacks = null, $config = null)
     {
@@ -89,22 +88,18 @@ class ObjectConfig extends AbstractConfig
     }
 
     /**
-     * Get Id of configuration class that is used for given class
-     *
-     * @return string
+     * {@inheritdoc}
      */
     protected function getConfigClassId()
     {
         if (!$this->classId) {
             $this->classId = get_class($this->owner);
         }
-        return ($this->classId);
+        return $this->classId;
     }
 
     /**
-     * Initialize list of configuration options
-     *
-     * @return void
+     * {@inheritdoc}
      */
     protected function initConfig()
     {
@@ -113,31 +108,21 @@ class ObjectConfig extends AbstractConfig
     }
 
     /**
-     * Check that given value of configuration option is valid
-     *
-     * @param string $name Configuration option name
-     * @param mixed $value Option value (passed by reference)
-     * @return boolean
+     * {@inheritdoc}
      */
     protected function validateConfig($name, &$value)
     {
         if ($this->callbacks['validateConfig']) {
-            return (call_user_func_array(
+            return call_user_func_array(
                 $this->callbacks['validateConfig'],
                 array($name, &$value)
-            ));
+            );
         }
-        return (true);
+        return true;
     }
 
     /**
-     * Perform required operations when configuration option value is changed
-     *
-     * @param string $name          Configuration option name
-     * @param mixed $value          Configuration option value
-     * @param boolean $merge        TRUE if configuration option is changed during merge process,
-     *                              FALSE if it is changed by setting configuration option
-     * @return void
+     * {@inheritdoc}
      */
     protected function onConfigChange($name, $value, $merge)
     {
@@ -150,18 +135,15 @@ class ObjectConfig extends AbstractConfig
     }
 
     /**
-     * Perform "lazy initialization" of configuration option with given name
-     *
-     * @param string $name Configuration option name
-     * @return mixed
+     * {@inheritdoc}
      */
     protected function lazyConfigInit($name)
     {
         if ($this->callbacks['lazyConfigInit']) {
-            return (call_user_func_array(
+            return call_user_func_array(
                 $this->callbacks['lazyConfigInit'],
                 array($name)
-            ));
+            );
         }
         return null;
     }
