@@ -119,12 +119,12 @@ class ObjectConfig extends AbstractConfig
     /**
      * {@inheritdoc}
      */
-    protected function onConfigChange($name, $value, $merge)
+    protected function onConfigChange($name, $value)
     {
         if ($this->callbacks['onConfigChange']) {
             call_user_func_array(
                 $this->callbacks['onConfigChange'],
-                array($name, $value, $merge)
+                array($name, $value)
             );
         }
     }

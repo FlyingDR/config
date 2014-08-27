@@ -118,7 +118,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             }
             $this->config[$key] = $value;
             unset($this->configPendingLazyInit[$key]);
-            $this->onConfigChange($key, $value, false);
+            $this->onConfigChange($key, $value);
         }
     }
 
@@ -224,11 +224,9 @@ abstract class AbstractConfig implements ConfigurableInterface
      *
      * @param string $name          Configuration option name
      * @param mixed $value          Configuration option value
-     * @param boolean $merge        TRUE if configuration option is changed during merge process,
-     *                              FALSE if it is changed by setting configuration option
      * @return void
      */
-    protected function onConfigChange($name, $value, $merge)
+    protected function onConfigChange($name, $value)
     {
     }
 

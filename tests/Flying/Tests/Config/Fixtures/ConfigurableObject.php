@@ -53,7 +53,7 @@ class ConfigurableObject extends BaseConfigurableObject
         return true;
     }
 
-    public function cbOnConfigChange($name, $value, $merge)
+    public function cbOnConfigChange($name, $value)
     {
         $this->logCallbackCall('onConfigChange', func_get_args());
     }

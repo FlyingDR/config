@@ -76,7 +76,7 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
         }
         $log = $logger->get();
         foreach ($reference as $name => $value) {
-            $expected = array($method, $name, $value, false);
+            $expected = array($method, $name, $value);
             $actual = array_shift($log);
             $this->assertTrue($expected === $actual);
         }

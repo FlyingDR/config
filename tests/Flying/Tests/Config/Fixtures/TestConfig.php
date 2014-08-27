@@ -47,10 +47,10 @@ class TestConfig extends AbstractConfig implements CallbackTrackingInterface
     /**
      * {@inheritdoc}
      */
-    protected function onConfigChange($name, $value, $merge)
+    protected function onConfigChange($name, $value)
     {
         $this->logCallbackCall(__FUNCTION__, func_get_args());
-        parent::onConfigChange($name, $value, $merge);
+        parent::onConfigChange($name, $value);
     }
 
 }
