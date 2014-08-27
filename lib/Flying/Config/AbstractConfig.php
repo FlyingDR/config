@@ -30,7 +30,11 @@ abstract class AbstractConfig implements ConfigurableInterface
      *
      * @var array
      */
-    private static $configClassesMap = array();
+    private static $configCache = array(
+        'classes_map' => array(),
+        'config'      => array(),
+        'lazy_init'   => array(),
+    );
 
     /**
      * {@inheritdoc}
@@ -239,12 +243,20 @@ abstract class AbstractConfig implements ConfigurableInterface
             return;
         }
         $this->configInBootstrap = true;
-        $this->initConfig();
-        foreach ($this->config as $name => $value) {
-            if ($value === null) {
-                $this->configPendingLazyInit[$name] = true;
+        $id = $this->getConfigClassId();
+        if (!array_key_exists($id, self::$configCache['config'])) {
+            $this->initConfig();
+            $lazy = array();
+            foreach ($this->config as $name => $value) {
+                if ($value === null) {
+                    $lazy[$name] = true;
+                }
             }
+            self::$configCache['config'][$id] = $this->config;
+            self::$configCache['lazy_init'][$id] = $lazy;
         }
+        $this->config = self::$configCache['config'][$id];
+        $this->configPendingLazyInit = self::$configCache['lazy_init'][$id];
         $this->configInBootstrap = false;
     }
 
@@ -256,26 +268,41 @@ abstract class AbstractConfig implements ConfigurableInterface
     protected function getConfigClassId()
     {
         $class = get_class($this);
-        if (!array_key_exists($class, self::$configClassesMap)) {
+        if (!array_key_exists($class, self::$configCache['classes_map'])) {
             // Determine which class actually defines configuration for given class
+            // It is highly uncommon, but still possible situation when class
+            // have no initConfig() method, so its configuration is completely inherited from parent,
+            // but has validateConfig() method, so initial state of configuration can be different
+            // from its parent.
+            // To handle this properly we need to find earliest parent class that have either initConfig()
+            // ot validateConfig() method and use is as a mapping target for current class
             $reflection = new \ReflectionClass($class);
-            $id = $reflection->getMethod('initConfig')->getDeclaringClass()->getName();
-            self::$configClassesMap[$class] = $id;
+            $c = $class;
+            do {
+                if (($reflection->getMethod('initConfig')->getDeclaringClass()->getName() === $c) ||
+                    ($reflection->getMethod('validateConfig')->getDeclaringClass()->getName() === $c)) {
+                    break;
+                }
+                $reflection = $reflection->getParentClass();
+                $c = $reflection->getName();
+            } while($reflection);
+            self::$configCache['classes_map'][$class] = $reflection->getName();
         }
-        return self::$configClassesMap[$class];
+        return self::$configCache['classes_map'][$class];
     }
 
     /**
      * Merge given configuration options with current configuration options
      *
      * @param array $config Configuration options to merge
+     * @throws \RuntimeException
      * @throws \InvalidArgumentException
      * @return void
      */
     protected function mergeConfig(array $config)
     {
-        if (!is_array($this->config)) {
-            $this->bootstrapConfig();
+        if (!$this->configInBootstrap) {
+            throw new \RuntimeException('mergeConfig() can only be used for configuration initialization');
         }
         if ((is_int(key($config))) && (array_keys($config) === range(0, sizeof($config) - 1))) {
             // Configuration is defined as array of keys with lazy initialization
@@ -289,16 +316,15 @@ abstract class AbstractConfig implements ConfigurableInterface
             $config = $temp;
         }
         foreach ($config as $key => $value) {
-            if ((!$this->configInBootstrap) && (!$this->validateConfig($key, $value))) {
-                continue;
+            if ($value !== null) {
+                if (!is_scalar($value)) {
+                    throw new \InvalidArgumentException(sprintf('Non-scalar initial value for configuration option "%s" for class "%s"', $key, get_class($this)));
+                }
+                if (!$this->validateConfig($key, $value)) {
+                    throw new \RuntimeException(sprintf('Invalid initial value for configuration option "%s" for class "%s"', $key, get_class($this)));
+                }
             }
             $this->config[$key] = $value;
-            if (!$this->configInBootstrap) {
-                if ($value === null) {
-                    $this->configPendingLazyInit[$key] = true;
-                }
-                $this->onConfigChange($key, $value, true);
-            }
         }
     }
 

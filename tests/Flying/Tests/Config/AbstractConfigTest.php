@@ -3,11 +3,28 @@
 namespace Flying\Tests\Config;
 
 use Flying\Config\ConfigurableInterface;
+use Flying\Tests\Config\Fixtures\BasicConfig;
 use Flying\Tests\Config\Fixtures\CallbackLog;
 use Flying\Tests\Config\Fixtures\CallbackTrackingInterface;
 
 abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @inheritdoc
+     */
+    public function tearDown()
+    {
+        // Clear cached information in configuration class to avoid side effects
+        $reflection = new \ReflectionClass('Flying\Config\AbstractConfig');
+        $cacheProperty = $reflection->getProperty('configCache');
+        $cacheProperty->setAccessible(true);
+        $cache = $cacheProperty->getValue(new BasicConfig());
+        foreach(array_keys($cache) as $key) {
+            $cache[$key] = array();
+        }
+        $cacheProperty->setValue($cache);
+        $cacheProperty->setAccessible(false);
+    }
 
     /**
      * Get configuration object to test

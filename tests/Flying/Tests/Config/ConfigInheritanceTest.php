@@ -5,6 +5,7 @@ namespace Flying\Tests\Config;
 use Flying\Tests\Config\Fixtures\A;
 use Flying\Tests\Config\Fixtures\B;
 use Flying\Tests\Config\Fixtures\C;
+use Flying\Tests\Config\Fixtures\D;
 
 /**
  * Test for configuration objects work with inheritance
@@ -21,7 +22,12 @@ class ConfigInheritanceTest extends AbstractConfigTest
         'from_b'    => 'B',
     );
     protected $_cReference = array(
-        'inherited' => 'C',
+        'inherited' => '',
+        'from_a'    => 'A',
+        'from_b'    => 'B',
+    );
+    protected $_dReference = array(
+        'inherited' => 'B',
         'from_a'    => 'A',
         'from_b'    => 'B',
     );
@@ -32,9 +38,12 @@ class ConfigInheritanceTest extends AbstractConfigTest
         $this->validateConfig($a->getConfig(), $this->_aReference, get_class($a));
         $b = new B();
         $this->validateConfig($b->getConfig(), $this->_bReference, get_class($b));
-        // Class Id for class C should be equal to B
         $c = new C();
-        $this->validateConfig($c->getConfig(), $this->_bReference, get_class($b));
+        $this->validateConfig($c->getConfig(), $this->_cReference, get_class($c));
+        // Class Id for class D should be equal to B because D itself have no init / validate methods
+        // @see Flying\Config\AbstractConfig::getConfigClassId
+        $d = new D();
+        $this->validateConfig($d->getConfig(), $this->_dReference, get_class($b));
     }
 
     public function testInheritedModificationsA()
@@ -77,7 +86,7 @@ class ConfigInheritanceTest extends AbstractConfigTest
             'inherited' => 'c',
             'from_a'    => 'a',
             'from_b'    => 'b',
-        ), get_class(new B()));
+        ), get_class(new C()));
     }
 
     public function testOnConfigChangeCallback()

@@ -7,7 +7,9 @@ use Flying\Tests\Config\Fixtures\BasicConfig;
 use Flying\Tests\Config\Fixtures\ConfigAsIterableObject;
 use Flying\Tests\Config\Fixtures\ConfigWithRejectedValidation;
 use Flying\Tests\Config\Fixtures\ConfigWithValidationException;
+use Flying\Tests\Config\Fixtures\InvalidKeyTypeAsInitialValue;
 use Flying\Tests\Config\Fixtures\InvalidKeyTypeForSimpleConfig;
+use Flying\Tests\Config\Fixtures\InvalidUseOfMergeConfigMethod;
 
 class BaseConfigTest extends AbstractConfigTest
 {
@@ -248,6 +250,14 @@ class BaseConfigTest extends AbstractConfigTest
         ), get_class($object));
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testInvalidInitialConfigurationOptionResultsInException()
+    {
+        new ConfigWithRejectedValidation(true);
+    }
+
     public function testConfigIdEqualsClassId()
     {
         $object = $this->getConfigObject();
@@ -301,6 +311,24 @@ class BaseConfigTest extends AbstractConfigTest
         $this->setExpectedException('\InvalidArgumentException', 'Configuration option name must be a string');
         $object = new InvalidKeyTypeForSimpleConfig();
         $object->getConfig();
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidKeyTypeAsInitialValueRaisesException()
+    {
+        $object = new InvalidKeyTypeAsInitialValue();
+        $object->getConfig();
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testMergeConfigMethodCantBeUsedOutsideInitialization()
+    {
+        $object = new InvalidUseOfMergeConfigMethod();
+        $object->callMergeConfig();
     }
 
     /**

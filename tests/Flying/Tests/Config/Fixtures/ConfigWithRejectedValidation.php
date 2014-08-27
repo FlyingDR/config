@@ -15,6 +15,18 @@ class ConfigWithRejectedValidation extends BasicConfig
     protected $_reject = true;
 
     /**
+     * @param bool $reject
+     */
+    public function __construct($reject = false)
+    {
+        // Avoid rejecting validation on configuration bootstrap
+        // because mergeConfig() throws exception on invalid initial values
+        $this->setReject($reject);
+        $this->bootstrapConfig();
+        $this->setReject(true);
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function initConfig()
@@ -50,5 +62,4 @@ class ConfigWithRejectedValidation extends BasicConfig
                 break;
         }
     }
-
 }
