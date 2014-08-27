@@ -38,7 +38,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      * @param string $name Configuration option name
      * @return boolean
      */
-    public final function isConfigExists($name)
+    public function isConfigExists($name)
     {
         if (!is_array($this->config)) {
             $this->bootstrapConfig();
@@ -111,7 +111,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      *                                      configuration option name and $value as its value
      * @return void
      */
-    public final function setConfig($config, $value = null)
+    public function setConfig($config, $value = null)
     {
         if (!is_array($this->config)) {
             $this->bootstrapConfig();
@@ -255,7 +255,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      *
      * @return void
      */
-    protected final function bootstrapConfig()
+    protected function bootstrapConfig()
     {
         if ((is_array($this->config)) || ($this->configInBootstrap)) {
             return;
@@ -294,7 +294,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      * @throws \InvalidArgumentException
      * @return void
      */
-    protected final function mergeConfig($config)
+    protected function mergeConfig($config)
     {
         if (!is_array($this->config)) {
             $this->bootstrapConfig();
@@ -372,7 +372,7 @@ abstract class AbstractConfig implements ConfigurableInterface
      * @throws \RuntimeException
      * @return void
      */
-    protected final function resolveLazyConfigInit($name = null)
+    protected function resolveLazyConfigInit($name = null)
     {
         if (!sizeof($this->configPendingLazyInit)) {
             return;
