@@ -92,7 +92,7 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
      *                                      option value in this case. Ignored otherwise.
      * @return array
      */
-    public function modifyConfig($config, $modification, $value = null)
+    public function modifyConfig(array $config, $modification, $value = null)
     {
         return ($this->_config->modifyConfig($config, $modification, $value));
     }

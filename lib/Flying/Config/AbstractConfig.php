@@ -125,13 +125,12 @@ abstract class AbstractConfig implements ConfigurableInterface
     /**
      * {@inheritdoc}
      */
-    public function modifyConfig($config, $modification, $value = null)
+    public function modifyConfig(array $config, $modification, $value = null)
     {
         // Call getConfig() for given configuration options, but only if it is necessary
         // Without this check it is possible to get infinite recursion loop in a case
         // if getConfig() is overridden and calls modifyConfig() by itself
-        if ((!is_array($config)) ||
-            (!array_key_exists(self::CLASS_ID_KEY, $config)) ||
+        if ((!array_key_exists(self::CLASS_ID_KEY, $config)) ||
             ($config[self::CLASS_ID_KEY] !== $this->getConfigClassId())
         ) {
             $config = $this->getConfig($config);

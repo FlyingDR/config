@@ -53,5 +53,5 @@ interface ConfigurableInterface
      *                                      option value in this case. Ignored otherwise.
      * @return array
      */
-    public function modifyConfig($config, $modification, $value = null);
+    public function modifyConfig(array $config, $modification, $value = null);
 }
