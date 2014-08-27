@@ -272,13 +272,10 @@ abstract class AbstractConfig implements ConfigurableInterface
      * @throws \InvalidArgumentException
      * @return void
      */
-    protected function mergeConfig($config)
+    protected function mergeConfig(array $config)
     {
         if (!is_array($this->config)) {
             $this->bootstrapConfig();
-        }
-        if (!is_array($config)) {
-            return;
         }
         if (is_int(key($config))) {
             if (array_keys($config) === range(0, sizeof($config) - 1)) {

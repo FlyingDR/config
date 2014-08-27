@@ -45,27 +45,22 @@ class ObjectConfig extends AbstractConfig
      * @param array $config    OPTIONAL Configuration options to initialize class with
      * @throws \InvalidArgumentException
      */
-    public function __construct($owner, $options, $callbacks = null, $config = null)
+    public function __construct($owner, array $options, array $callbacks = array(), array $config = array())
     {
         $this->setOwner($owner);
-        if (!is_array($options)) {
-            throw new \InvalidArgumentException('Configuration options list must be an array');
-        }
         $this->options = $options;
-        if (is_array($callbacks)) {
-            foreach ($callbacks as $type => $callback) {
-                if (!array_key_exists($type, $this->callbacks)) {
-                    throw new \InvalidArgumentException('Unknown customization callback type: ' . $type);
-                }
-                // If method name is passed instead of callback - create callback from it
-                if (is_string($callback)) {
-                    $callback = array($this->owner, $callback);
-                }
-                if (!is_callable($callback)) {
-                    throw new \InvalidArgumentException('Non-callable callback is given for customization callback type: ' . $type);
-                }
-                $this->callbacks[$type] = $callback;
+        foreach ($callbacks as $type => $callback) {
+            if (!array_key_exists($type, $this->callbacks)) {
+                throw new \InvalidArgumentException('Unknown customization callback type: ' . $type);
             }
+            // If method name is passed instead of callback - create callback from it
+            if ((is_string($callback)) && (method_exists($this->owner, $callback))) {
+                $callback = array($this->owner, $callback);
+            }
+            if (!is_callable($callback)) {
+                throw new \InvalidArgumentException('Non-callable callback is given for customization callback type: ' . $type);
+            }
+            $this->callbacks[$type] = $callback;
         }
         $this->bootstrapConfig();
         $this->setConfig($config);

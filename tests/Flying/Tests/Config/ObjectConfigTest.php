@@ -14,13 +14,7 @@ class ObjectConfigTest extends BaseConfigTest
     public function testMissedOwnerForConfigObjectCreation()
     {
         $this->setExpectedException('\InvalidArgumentException', 'Given owner of configuration object is not an object');
-        new ObjectConfig(null, null);
-    }
-
-    public function testMissedConfigurationForConfigObjectCreation()
-    {
-        $this->setExpectedException('\InvalidArgumentException', 'Configuration options list must be an array');
-        new ObjectConfig($this, null);
+        new ObjectConfig(null, array());
     }
 
     public function testUnknownCallbackPassingForConfigObjectCreation()
