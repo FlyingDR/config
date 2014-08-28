@@ -79,7 +79,7 @@ $cache->setConfig(array(
 ```
 but at this point we can't be sure that our configuration is valid at any point of time. To achieve this - it is necessary to implement configuration validator.
 
-**IMPORTANT**: Starting from version 2.0.0 only scalar configuration options can be passed to ```initConfig()``` because configuration initialization results are now cached for better performance.
+**IMPORTANT**: Starting from version 2.0.0 only scalar and array configuration options can be passed to ```initConfig()``` because configuration initialization results are now cached for better performance. Passing any kind of dynamic values (e.g. array of objects) to ```initConfig()``` may cause unwanted side effects, but not controlled for performance reasons.
 
 ### Configuration validation
 To make configuration valid - we need to implement one more method: ```validateConfig()```. This method receives name and value of configuration option and should decide if configuration option can be changed in this way and, optionally, can normalize given value. For example validator for our example configuration may look like this:

@@ -3,11 +3,12 @@
 namespace Flying\Tests\Config;
 
 use Flying\Config\ConfigurableInterface;
+use Flying\Tests\Config\Fixtures\AllowedTypesOfInitialValues;
 use Flying\Tests\Config\Fixtures\BasicConfig;
 use Flying\Tests\Config\Fixtures\ConfigAsIterableObject;
 use Flying\Tests\Config\Fixtures\ConfigWithRejectedValidation;
 use Flying\Tests\Config\Fixtures\ConfigWithValidationException;
-use Flying\Tests\Config\Fixtures\InvalidKeyTypeAsInitialValue;
+use Flying\Tests\Config\Fixtures\ForbiddenTypesOfAsInitialValues;
 use Flying\Tests\Config\Fixtures\InvalidKeyTypeForSimpleConfig;
 use Flying\Tests\Config\Fixtures\InvalidUseOfMergeConfigMethod;
 
@@ -352,12 +353,18 @@ class BaseConfigTest extends AbstractConfigTest
         $object->getConfig();
     }
 
+    public function testAllowedTypesOfInitialValues()
+    {
+        $object = new AllowedTypesOfInitialValues();
+        $object->getConfig();
+    }
+
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testInvalidKeyTypeAsInitialValueRaisesException()
+    public function testForbiddenTypesOfAsInitialValuesRaisesException()
     {
-        $object = new InvalidKeyTypeAsInitialValue();
+        $object = new ForbiddenTypesOfAsInitialValues();
         $object->getConfig();
     }
 

@@ -321,7 +321,7 @@ abstract class AbstractConfig implements ConfigurableInterface
         }
         foreach ($config as $key => $value) {
             if ($value !== null) {
-                if (!is_scalar($value)) {
+                if ((!is_scalar($value)) && (!is_array($value))) {
                     throw new \InvalidArgumentException(sprintf('Non-scalar initial value for configuration option "%s" for class "%s"', $key, get_class($this)));
                 }
                 if (!$this->validateConfig($key, $value)) {

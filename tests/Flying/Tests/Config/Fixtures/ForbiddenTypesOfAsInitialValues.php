@@ -8,7 +8,7 @@ use Flying\Config\AbstractConfig;
  * Fixture class to test exception raising on passing
  * invalid types as initial value for configuration options
  */
-class InvalidKeyTypeAsInitialValue extends AbstractConfig
+class ForbiddenTypesOfAsInitialValues extends AbstractConfig
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,7 @@ class InvalidKeyTypeAsInitialValue extends AbstractConfig
     {
         parent::initConfig();
         $this->mergeConfig(array(
-            'invalid_array'  => array(1, 2, 3),
-            'invalid_object' => new \ArrayObject(),
+            'object_option' => new \ArrayObject(),
         ));
     }
 }
