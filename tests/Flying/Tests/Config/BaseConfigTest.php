@@ -19,36 +19,36 @@ class BaseConfigTest extends AbstractConfigTest
      *
      * @var array
      */
-    protected $_configObjects = array(
+    private static $configObjects = [
         'ConfigAsArrayAccessObject',
         'ConfigAsIterableObject',
         'ConfigAsToArrayObject',
-    );
-    protected $_configReference = array(
+    ];
+    private static $configReference = [
         'string_option'  => 'some value',
         'boolean_option' => true,
         'int_option'     => 42,
-    );
-    protected $_configModifications = array(
+    ];
+    private static $configModifications = [
         'string_option'  => 'modified value',
         'boolean_option' => false,
         'int_option'     => 12345,
-    );
-    protected $_configModificationReference = array(
+    ];
+    private static $configModificationReference = [
         'string_option'  => 'modified value',
         'boolean_option' => false,
         'int_option'     => 12345,
-    );
-    protected $_configSetModifications = array(
+    ];
+    private static $configSetModifications = [
         'string_option'  => 12345,
         'boolean_option' => 12345,
         'int_option'     => 12345,
-    );
-    protected $_configSetReference = array(
+    ];
+    private static $configSetReference = [
         'string_option'  => '12345',
         'boolean_option' => true,
         'int_option'     => 12345,
-    );
+    ];
 
     public function testExistenceChecks()
     {
@@ -58,10 +58,12 @@ class BaseConfigTest extends AbstractConfigTest
         $this->assertTrue($object->isConfigExists('int_option'));
         $this->assertFalse($object->isConfigExists('nonexistent_option'));
         // Test passing invalid argument type for method
-        $this->assertFalse($object->isConfigExists(array('int_option')));
+        /** @noinspection PhpParamsInspection */
+        $this->assertFalse($object->isConfigExists(['int_option']));
         $this->assertFalse($object->isConfigExists(null));
         $this->assertFalse($object->isConfigExists(true));
-        $this->assertFalse($object->isConfigExists(array()));
+        /** @noinspection PhpParamsInspection */
+        $this->assertFalse($object->isConfigExists([]));
         $this->assertFalse($object->isConfigExists(new \ArrayObject()));
         // Class Id should not be visible
         $this->assertFalse($object->isConfigExists(ConfigurableInterface::CLASS_ID_KEY));
@@ -79,7 +81,7 @@ class BaseConfigTest extends AbstractConfigTest
     public function testGettingCompleteConfig()
     {
         $object = $this->getConfigObject();
-        $this->validateConfig($object->getConfig(), $this->_configReference);
+        $this->validateConfig($object->getConfig(), self::$configReference);
     }
 
     public function testRepetitiveConfigGetting()
@@ -87,58 +89,58 @@ class BaseConfigTest extends AbstractConfigTest
         $object = $this->getConfigObject();
         $c1 = $object->getConfig();
         $c2 = $object->getConfig($c1);
-        $this->assertTrue($c1 === $c2);
+        $this->assertSame($c1, $c2);
     }
 
     public function testGettingExportedConfig()
     {
         $object = $this->getConfigObject();
 
-        $config = $object->getConfig(null, false);
+        $config = $object->getConfig();
         $this->assertArrayHasKey(ConfigurableInterface::CLASS_ID_KEY, $config);
 
-        $modified = $object->getConfig($this->_configModifications, false);
+        $modified = $object->getConfig(self::$configModifications);
         $this->assertArrayHasKey(ConfigurableInterface::CLASS_ID_KEY, $modified);
-        $this->validateConfig($modified, $this->_configModifications);
+        $this->validateConfig($modified, self::$configModifications);
 
         $exported = $object->getConfig(null, true);
         $this->assertArrayNotHasKey(ConfigurableInterface::CLASS_ID_KEY, $exported);
-        $this->assertEquals($exported, $this->_configReference);
+        $this->assertEquals($exported, self::$configReference);
 
-        $modified = $object->getConfig($this->_configModifications, true);
+        $modified = $object->getConfig(self::$configModifications, true);
         $this->assertArrayNotHasKey(ConfigurableInterface::CLASS_ID_KEY, $modified);
-        $this->assertEquals($modified, $this->_configModifications);
+        $this->assertEquals($modified, self::$configModifications);
     }
 
     public function testPassingInvalidValuesAsConfigModifications()
     {
         $object = $this->getConfigObject();
-        $this->validateConfig($object->getConfig(null), $this->_configReference);
-        $this->validateConfig($object->getConfig(true), $this->_configReference);
-        $this->validateConfig($object->getConfig(false), $this->_configReference);
-        $this->validateConfig($object->getConfig(array()), $this->_configReference);
-        $this->validateConfig($object->getConfig(new \ArrayObject()), $this->_configReference);
+        $this->validateConfig($object->getConfig(), self::$configReference);
+        $this->validateConfig($object->getConfig(true), self::$configReference);
+        $this->validateConfig($object->getConfig(false), self::$configReference);
+        $this->validateConfig($object->getConfig([]), self::$configReference);
+        $this->validateConfig($object->getConfig(new \ArrayObject()), self::$configReference);
     }
 
     public function testGettingConfigWithModifications()
     {
-        $this->runConfigModificationTest($this->_configModifications, $this->_configModificationReference);
+        $this->runConfigModificationTest(self::$configModifications, self::$configModificationReference);
     }
 
     public function testPassingObjectsAsConfigModifications()
     {
-        foreach ($this->_configObjects as $configObject) {
-            $configObject = join('\\', array(__NAMESPACE__, 'Fixtures', $configObject));
-            $modifications = new $configObject($this->_configModifications);
-            $this->runConfigModificationTest($modifications, $this->_configModificationReference);
+        foreach (self::$configObjects as $configObject) {
+            $configObject = implode('\\', [__NAMESPACE__, 'Fixtures', $configObject]);
+            $modifications = new $configObject(self::$configModifications);
+            $this->runConfigModificationTest($modifications, self::$configModificationReference);
         }
     }
 
     public function testConfigWithModificationsShouldNotIncludeNonExistentProperties()
     {
-        $modifications = $this->_configModifications;
+        $modifications = self::$configModifications;
         $modifications['nonexisting'] = 'option';
-        $this->runConfigModificationTest($modifications, $this->_configModificationReference);
+        $this->runConfigModificationTest($modifications, self::$configModificationReference);
     }
 
     protected function runConfigModificationTest($modifications, $reference)
@@ -156,35 +158,35 @@ class BaseConfigTest extends AbstractConfigTest
         $object->setConfig('string_option', 'another value');
         $this->assertEquals($object->getConfig('string_option'), 'another value');
         $object->setConfig('string_option', 12345);
-        $this->assertTrue($object->getConfig('string_option') === '12345');
-        $this->assertFalse($object->getConfig('string_option') === 12345);
+        $this->assertSame($object->getConfig('string_option'), '12345');
+        $this->assertNotSame($object->getConfig('string_option'), 12345);
         $object->setConfig('boolean_option', 123);
         $this->assertTrue($object->getConfig('boolean_option'));
         $object->setConfig('boolean_option', 0);
         $this->assertFalse($object->getConfig('boolean_option'));
         $object->setConfig('int_option', 12345);
-        $this->assertTrue($object->getConfig('int_option') === 12345);
-        $this->assertFalse($object->getConfig('int_option') === '12345');
+        $this->assertSame($object->getConfig('int_option'), 12345);
+        $this->assertNotSame($object->getConfig('int_option'), '12345');
         $object->setConfig('int_option', 123.45);
-        $this->assertTrue($object->getConfig('int_option') === 123);
-        $this->assertFalse($object->getConfig('int_option') === 123.45);
+        $this->assertSame($object->getConfig('int_option'), 123);
+        $this->assertNotSame($object->getConfig('int_option'), 123.45);
     }
 
     public function testSettingInvalidConfigOptions()
     {
         // Passing invalid names of configuration options should not affect object configuration
-        $invalidValues = array(
+        $invalidValues = [
             null,
             true,
             false,
             'some nonexisting key',
-            array(),
+            [],
             new \ArrayObject(),
-        );
+        ];
         foreach ($invalidValues as $value) {
             $object = $this->getConfigObject();
             $object->setConfig($value);
-            $this->validateConfig($object->getConfig(), $this->_configReference);
+            $this->validateConfig($object->getConfig(), self::$configReference);
         }
     }
 
@@ -195,28 +197,31 @@ class BaseConfigTest extends AbstractConfigTest
         $this->assertEquals($object->getConfig('rejected'), 'abc');
     }
 
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Test exception on checking config option
+     */
     public function testExceptionDuringValidation()
     {
         $object = new ConfigWithValidationException();
-        $this->setExpectedException('\Exception', 'Test exception on checking config option');
         $object->setConfig('exception', 'abc');
     }
 
     public function testSettingMultipleConfigOptions()
     {
         $object = $this->getConfigObject();
-        $object->setConfig($this->_configSetModifications);
-        $this->validateConfig($object->getConfig(), $this->_configSetReference);
+        $object->setConfig(self::$configSetModifications);
+        $this->validateConfig($object->getConfig(), self::$configSetReference);
     }
 
     public function testPassingObjectsAsConfigSetters()
     {
-        foreach ($this->_configObjects as $configObject) {
-            $configObject = join('\\', array(__NAMESPACE__, 'Fixtures', $configObject));
-            $modifications = new $configObject($this->_configSetModifications);
+        foreach (self::$configObjects as $configObject) {
+            $configObject = implode('\\', [__NAMESPACE__, 'Fixtures', $configObject]);
+            $modifications = new $configObject(self::$configSetModifications);
             $object = $this->getConfigObject();
             $object->setConfig($modifications);
-            $this->validateConfig($object->getConfig(), $this->_configSetReference);
+            $this->validateConfig($object->getConfig(), self::$configSetReference);
         }
     }
 
@@ -227,48 +232,48 @@ class BaseConfigTest extends AbstractConfigTest
 
         // Test modification of single config option
         $modified = $object->modifyConfig($config, 'int_option', 12345);
-        $this->validateConfig($modified, array(
+        $this->validateConfig($modified, [
             'string_option'  => 'some value',
             'boolean_option' => true,
             'int_option'     => 12345,
-        ));
+        ]);
         // Make sure that we didn't modify value of original configuration option
         $this->assertEquals($object->getConfig('int_option'), 42);
 
         // Test modification of multiple config options at once
-        $modified = $object->modifyConfig($config, array(
+        $modified = $object->modifyConfig($config, [
             'string_option'  => 'another value',
             'boolean_option' => false,
-        ));
-        $this->validateConfig($modified, array(
+        ]);
+        $this->validateConfig($modified, [
             'string_option'  => 'another value',
             'boolean_option' => false,
             'int_option'     => 42,
-        ));
+        ]);
 
         // Test modification of multiple config options using object
-        $modified = $object->modifyConfig($config, new ConfigAsIterableObject($this->_configModifications));
-        $this->validateConfig($modified, $this->_configModificationReference);
+        $modified = $object->modifyConfig($config, new ConfigAsIterableObject(self::$configModifications));
+        $this->validateConfig($modified, self::$configModificationReference);
 
         // Make sure that we didn't modify value of original configuration options
-        $this->validateConfig($object->getConfig(), $this->_configReference);
+        $this->validateConfig($object->getConfig(), self::$configReference);
     }
 
     public function testModificationsWithRejectedValidation()
     {
         $object = new ConfigWithRejectedValidation();
         $config = $object->getConfig();
-        $modified = $object->modifyConfig($config, array(
+        $modified = $object->modifyConfig($config, [
             'string_option'  => 'another value',
             'boolean_option' => false,
             'rejected'       => 'xyz',
-        ));
-        $this->validateConfig($modified, array(
+        ]);
+        $this->validateConfig($modified, [
             'string_option'  => 'another value',
             'boolean_option' => false,
             'int_option'     => 42,
             'rejected'       => 'abc',
-        ), get_class($object));
+        ], get_class($object));
     }
 
     public function testEmptyModification()
@@ -283,10 +288,10 @@ class BaseConfigTest extends AbstractConfigTest
     {
         $object = $this->getConfigObject();
         $config = $object->getConfig();
-        $modified = $object->modifyConfig($config, array(
+        $modified = $object->modifyConfig($config, [
             'abc' => 123,
             'xyz' => 456,
-        ));
+        ]);
         $this->assertEquals($config, $modified);
     }
 
@@ -318,37 +323,40 @@ class BaseConfigTest extends AbstractConfigTest
         $this->assertEquals($config[$idKey], $classId);
 
         // Set as part of multi-element set
-        $object->setConfig(array(
+        $object->setConfig([
             $idKey       => 'something',
             'int_option' => 12345,
-        ));
+        ]);
         $config = $object->getConfig();
         $this->assertEquals($config[$idKey], $classId);
 
         // Get with modifications
-        $config = $object->getConfig(array(
+        $config = $object->getConfig([
             $idKey       => 'something',
             'int_option' => 12345,
-        ));
+        ]);
         $this->assertEquals($config[$idKey], $classId);
 
         // Modify configuration
-        $config = $object->modifyConfig(array(
+        $config = $object->modifyConfig([
             $idKey       => 'something',
             'int_option' => 12345,
-        ), 'boolean_value', false);
+        ], 'boolean_value', false);
         $this->assertEquals($config[$idKey], $classId);
     }
 
     public function testOnConfigChangeCallback()
     {
-        $tests = $this->_configModifications;
+        $tests = self::$configModifications;
         $this->runOnConfigChangeCallbackTest($this->getConfigObject(), $tests);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Configuration option name must be a string
+     */
     public function testInvalidKeyTypeForSimpleConfigDeclaration()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'Configuration option name must be a string');
         $object = new InvalidKeyTypeForSimpleConfig();
         $object->getConfig();
     }
@@ -386,5 +394,4 @@ class BaseConfigTest extends AbstractConfigTest
     {
         return new BasicConfig();
     }
-
 }

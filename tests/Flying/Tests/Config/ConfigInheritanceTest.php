@@ -12,91 +12,91 @@ use Flying\Tests\Config\Fixtures\D;
  */
 class ConfigInheritanceTest extends AbstractConfigTest
 {
-    protected $_aReference = array(
+    private static $aReference = [
         'inherited' => 'A',
         'from_a'    => 'A',
-    );
-    protected $_bReference = array(
+    ];
+    private static $bReference = [
         'inherited' => 'B',
         'from_a'    => 'A',
         'from_b'    => 'B',
-    );
-    protected $_cReference = array(
+    ];
+    private static $cReference = [
         'inherited' => '',
         'from_a'    => 'A',
         'from_b'    => 'B',
-    );
-    protected $_dReference = array(
+    ];
+    private static $dReference = [
         'inherited' => 'B',
         'from_a'    => 'A',
         'from_b'    => 'B',
-    );
+    ];
 
     public function testInheritedConfig()
     {
         $a = new A();
-        $this->validateConfig($a->getConfig(), $this->_aReference, get_class($a));
+        $this->validateConfig($a->getConfig(), self::$aReference, get_class($a));
         $b = new B();
-        $this->validateConfig($b->getConfig(), $this->_bReference, get_class($b));
+        $this->validateConfig($b->getConfig(), self::$bReference, get_class($b));
         $c = new C();
-        $this->validateConfig($c->getConfig(), $this->_cReference, get_class($c));
+        $this->validateConfig($c->getConfig(), self::$cReference, get_class($c));
         // Class Id for class D should be equal to B because D itself have no init / validate methods
         // @see Flying\Config\AbstractConfig::getConfigClassId
         $d = new D();
-        $this->validateConfig($d->getConfig(), $this->_dReference, get_class($b));
+        $this->validateConfig($d->getConfig(), self::$dReference, get_class($b));
     }
 
     public function testInheritedModificationsA()
     {
         $a = new A();
-        $a->setConfig(array(
+        $a->setConfig([
             'inherited' => 'abc',
             'from_a'    => 'abc',
-        ));
-        $this->validateConfig($a->getConfig(), array(
+        ]);
+        $this->validateConfig($a->getConfig(), [
             'inherited' => 'abc',
             'from_a'    => 'a',
-        ), get_class($a));
+        ], get_class($a));
     }
 
     public function testInheritedModificationsB()
     {
         $b = new B();
-        $b->setConfig(array(
+        $b->setConfig([
             'inherited' => 'abc',
             'from_a'    => 'abc',
             'from_b'    => 'abc',
-        ));
-        $this->validateConfig($b->getConfig(), array(
+        ]);
+        $this->validateConfig($b->getConfig(), [
             'inherited' => 'abc',
             'from_a'    => 'a',
             'from_b'    => 'b',
-        ), get_class($b));
+        ], get_class($b));
     }
 
     public function testInheritedModificationsC()
     {
         $c = new C();
-        $c->setConfig(array(
+        $c->setConfig([
             'inherited' => 'abc',
             'from_a'    => 'abc',
             'from_b'    => 'abc',
-        ));
-        $this->validateConfig($c->getConfig(), array(
+        ]);
+        $this->validateConfig($c->getConfig(), [
             'inherited' => 'c',
             'from_a'    => 'a',
             'from_b'    => 'b',
-        ), get_class(new C()));
+        ], get_class(new C()));
     }
 
     public function testOnConfigChangeCallback()
     {
         $object = new A();
-        $this->runOnConfigChangeCallbackTest($object, $this->_aReference);
+        $this->runOnConfigChangeCallbackTest($object, self::$aReference);
         $object = new B();
-        $this->runOnConfigChangeCallbackTest($object, $this->_bReference);
+        $this->runOnConfigChangeCallbackTest($object, self::$bReference);
         $object = new C();
-        $this->runOnConfigChangeCallbackTest($object, $this->_cReference);
+        $this->runOnConfigChangeCallbackTest($object, self::$cReference);
     }
 
     /**
@@ -108,5 +108,4 @@ class ConfigInheritanceTest extends AbstractConfigTest
     {
         return new A();
     }
-
 }

@@ -10,48 +10,59 @@ use Flying\Tests\Config\Fixtures\ConfigurableObject;
  */
 class ObjectConfigTest extends BaseConfigTest
 {
-
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Given owner of configuration object is not an object
+     */
     public function testMissedOwnerForConfigObjectCreation()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'Given owner of configuration object is not an object');
-        new ObjectConfig(null, array());
+        new ObjectConfig(null, []);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Unknown customization callback type: unknown
+     */
     public function testUnknownCallbackPassingForConfigObjectCreation()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'Unknown customization callback type: unknown');
-        new ObjectConfig($this, array(), array(
+        new ObjectConfig($this, [], [
             'unknown' => null,
-        ));
+        ]);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Non-callable callback is given for customization callback type: validateConfig
+     */
     public function testInvalidCallbackPassingForConfigObjectCreation()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'Non-callable callback is given for customization callback type: validateConfig');
-        new ObjectConfig($this, array(), array(
+        new ObjectConfig($this, [], [
             'validateConfig' => 'unavailableMethod',
-        ));
+        ]);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Non-callable callback is given for customization callback type: validateConfig
+     */
     public function testNonCallableCallbackPassingForConfigObjectCreation()
     {
-        $this->setExpectedException('\InvalidArgumentException', 'Non-callable callback is given for customization callback type: validateConfig');
-        new ObjectConfig($this, array(), array(
-            'validateConfig' => array(),
-        ));
+        new ObjectConfig($this, [], [
+            'validateConfig' => [],
+        ]);
     }
 
     public function testConfigInitializationInConstructor()
     {
-        $config = new ObjectConfig($this, array(
+        $config = new ObjectConfig($this, [
             'a' => 'abc',
-        ), array(), array(
+        ], [], [
             'a' => 'xyz',
             'b' => 123,
-        ));
-        $this->validateConfig($config->getConfig(), array(
+        ]);
+        $this->validateConfig($config->getConfig(), [
             'a' => 'xyz',
-        ), get_class($this));
+        ], get_class($this));
     }
 
     /**
@@ -63,5 +74,4 @@ class ObjectConfigTest extends BaseConfigTest
     {
         return new ConfigurableObject();
     }
-
 }

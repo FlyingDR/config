@@ -16,14 +16,13 @@ class InvalidKeyTypeForSimpleConfig extends AbstractConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             null,
             true,
             false,
             12345,
-            array(1, 2, 3),
+            [1, 2, 3],
             new \ArrayObject(),
-        ));
+        ]);
     }
-
 }

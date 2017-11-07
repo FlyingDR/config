@@ -14,11 +14,11 @@ class LazyInitConfigWithInvalidValues extends LazyInitConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'should_be_boolean',
             'should_be_int',
             'should_be_string',
-        ));
+        ]);
     }
 
     /**
@@ -64,5 +64,4 @@ class LazyInitConfigWithInvalidValues extends LazyInitConfig
         }
         return true;
     }
-
 }

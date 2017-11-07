@@ -13,11 +13,11 @@ class BasicConfig extends TestConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'string_option'  => 'some value',
             'boolean_option' => true,
             'int_option'     => 42,
-        ));
+        ]);
     }
 
     /**
@@ -41,5 +41,4 @@ class BasicConfig extends TestConfig
         }
         return true;
     }
-
 }

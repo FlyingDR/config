@@ -7,16 +7,15 @@ namespace Flying\Tests\Config\Fixtures;
  */
 class ConfigAsToArrayObject
 {
-    private $properties = array();
+    private $properties;
 
-    public function __construct(array $properties = array())
+    public function __construct(array $properties = [])
     {
         $this->properties = $properties;
     }
 
     public function toArray()
     {
-        return ($this->properties);
+        return $this->properties;
     }
-
 }

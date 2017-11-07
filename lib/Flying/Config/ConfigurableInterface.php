@@ -30,7 +30,7 @@ interface ConfigurableInterface
      * @param string|array|null $config     OPTIONAL Option name to get or configuration options
      *                                      to override default object's configuration.
      * @param boolean $export               OPTIONAL TRUE to skip adding CLASS_ID_KEY entry into resulted configuration array
-     * @return mixed
+         * @return mixed
      */
     public function getConfig($config = null, $export = false);
 

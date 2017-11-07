@@ -7,7 +7,6 @@ namespace Flying\Tests\Config\Fixtures;
  */
 class ConfigurableObject extends BaseConfigurableObject
 {
-
     /**
      * Get configuration options for test configuration object
      *
@@ -15,11 +14,11 @@ class ConfigurableObject extends BaseConfigurableObject
      */
     protected function getConfigOptions()
     {
-        return array(
+        return [
             'string_option',
             'boolean_option',
             'int_option',
-        );
+        ];
     }
 
     /**
@@ -30,11 +29,11 @@ class ConfigurableObject extends BaseConfigurableObject
      */
     protected function getConfigCallbacks()
     {
-        return array(
-            'validateConfig' => array($this, 'cbValidateConfig'),
-            'onConfigChange' => array($this, 'cbOnConfigChange'),
-            'lazyConfigInit' => array($this, 'cbLazyConfigInit'),
-        );
+        return [
+            'validateConfig' => [$this, 'cbValidateConfig'],
+            'onConfigChange' => [$this, 'cbOnConfigChange'],
+            'lazyConfigInit' => [$this, 'cbLazyConfigInit'],
+        ];
     }
 
     public function cbValidateConfig($name, &$value)
@@ -76,5 +75,4 @@ class ConfigurableObject extends BaseConfigurableObject
                 break;
         }
     }
-
 }

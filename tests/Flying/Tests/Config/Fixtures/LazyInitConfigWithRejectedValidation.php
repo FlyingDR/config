@@ -14,9 +14,9 @@ class LazyInitConfigWithRejectedValidation extends LazyInitConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'invalid_lazy_init',
-        ));
+        ]);
     }
 
     /**
@@ -25,6 +25,7 @@ class LazyInitConfigWithRejectedValidation extends LazyInitConfig
     protected function lazyConfigInit($name)
     {
         $this->logCallbackCall(__FUNCTION__, func_get_args());
+        /** @noinspection DegradedSwitchInspection */
         switch ($name) {
             case 'invalid_lazy_init':
                 return 'abc';
@@ -40,6 +41,7 @@ class LazyInitConfigWithRejectedValidation extends LazyInitConfig
      */
     protected function validateConfig($name, &$value)
     {
+        /** @noinspection DegradedSwitchInspection */
         switch ($name) {
             case 'invalid_lazy_init':
                 return false;
@@ -49,5 +51,4 @@ class LazyInitConfigWithRejectedValidation extends LazyInitConfig
                 break;
         }
     }
-
 }

@@ -13,10 +13,10 @@ class A extends TestConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'inherited' => 'A',
             'from_a'    => 'A',
-        ));
+        ]);
     }
 
     /**
@@ -37,5 +37,4 @@ class A extends TestConfig
         }
         return true;
     }
-
 }

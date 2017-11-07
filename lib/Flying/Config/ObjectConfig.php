@@ -18,7 +18,7 @@ class ObjectConfig extends AbstractConfig
      *
      * @var array
      */
-    private $options = array();
+    private $options;
     /**
      * Configuration class Id for this configuration object
      *
@@ -30,11 +30,11 @@ class ObjectConfig extends AbstractConfig
      *
      * @var array
      */
-    private $callbacks = array(
+    private $callbacks = [
         'validateConfig' => null, // Custom implementation of validateConfig()
         'onConfigChange' => null, // Custom implementation of onConfigChange()
         'lazyConfigInit' => null, // Custom implementation of lazyConfigInit()
-    );
+    ];
 
     /**
      * Class constructor
@@ -45,7 +45,7 @@ class ObjectConfig extends AbstractConfig
      * @param array $config    OPTIONAL Configuration options to initialize class with
      * @throws \InvalidArgumentException
      */
-    public function __construct($owner, array $options, array $callbacks = array(), array $config = array())
+    public function __construct($owner, array $options, array $callbacks = [], array $config = [])
     {
         $this->setOwner($owner);
         $this->options = $options;
@@ -54,8 +54,8 @@ class ObjectConfig extends AbstractConfig
                 throw new \InvalidArgumentException('Unknown customization callback type: ' . $type);
             }
             // If method name is passed instead of callback - create callback from it
-            if ((is_string($callback)) && (method_exists($this->owner, $callback))) {
-                $callback = array($this->owner, $callback);
+            if (is_string($callback) && method_exists($this->owner, $callback)) {
+                $callback = [$this->owner, $callback];
             }
             if (!is_callable($callback)) {
                 throw new \InvalidArgumentException('Non-callable callback is given for customization callback type: ' . $type);
@@ -110,7 +110,7 @@ class ObjectConfig extends AbstractConfig
         if ($this->callbacks['validateConfig']) {
             return call_user_func_array(
                 $this->callbacks['validateConfig'],
-                array($name, &$value)
+                [$name, &$value]
             );
         }
         return true;
@@ -124,7 +124,7 @@ class ObjectConfig extends AbstractConfig
         if ($this->callbacks['onConfigChange']) {
             call_user_func_array(
                 $this->callbacks['onConfigChange'],
-                array($name, $value)
+                [$name, $value]
             );
         }
     }
@@ -137,7 +137,7 @@ class ObjectConfig extends AbstractConfig
         if ($this->callbacks['lazyConfigInit']) {
             return call_user_func_array(
                 $this->callbacks['lazyConfigInit'],
-                array($name)
+                [$name]
             );
         }
         return null;

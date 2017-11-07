@@ -12,7 +12,7 @@ class CallbackLog
      *
      * @var array
      */
-    protected $_log = array();
+    private $log = [];
 
     /**
      * Add callback log entry
@@ -24,7 +24,7 @@ class CallbackLog
     public function add($method, array $args)
     {
         array_unshift($args, $method);
-        $this->_log[] = $args;
+        $this->log[] = $args;
     }
 
     /**
@@ -34,7 +34,6 @@ class CallbackLog
      */
     public function get()
     {
-        return $this->_log;
+        return $this->log;
     }
-
 }

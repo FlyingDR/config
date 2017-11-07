@@ -14,15 +14,15 @@ class InvalidUseOfMergeConfigMethod extends BasicConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'test' => 123,
-        ));
+        ]);
     }
 
     public function callMergeConfig()
     {
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'another' => 1234,
-        ));
+        ]);
     }
 }

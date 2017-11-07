@@ -8,21 +8,21 @@ namespace Flying\Tests\Config\Fixtures;
  */
 class ConfigAsArrayAccessObject implements \ArrayAccess
 {
-    private $properties = array();
+    private $properties;
 
-    public function __construct(array $properties = array())
+    public function __construct(array $properties = [])
     {
         $this->properties = $properties;
     }
 
     public function offsetExists($offset)
     {
-        return (isset($this->properties[$offset]));
+        return isset($this->properties[$offset]);
     }
 
     public function offsetGet($offset)
     {
-        return ($this->properties[$offset]);
+        return $this->properties[$offset];
     }
 
     public function offsetSet($offset, $value)
@@ -34,5 +34,4 @@ class ConfigAsArrayAccessObject implements \ArrayAccess
     {
         unset($this->properties[$offset]);
     }
-
 }

@@ -6,6 +6,7 @@ use Flying\Config\ConfigurableInterface;
 use Flying\Tests\Config\Fixtures\BasicConfig;
 use Flying\Tests\Config\Fixtures\CallbackLog;
 use Flying\Tests\Config\Fixtures\CallbackTrackingInterface;
+use Flying\Config\AbstractConfig;
 
 abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,12 +16,12 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         // Clear cached information in configuration class to avoid side effects
-        $reflection = new \ReflectionClass('Flying\Config\AbstractConfig');
+        $reflection = new \ReflectionClass(AbstractConfig::class);
         $cacheProperty = $reflection->getProperty('configCache');
         $cacheProperty->setAccessible(true);
         $cache = $cacheProperty->getValue(new BasicConfig());
         foreach(array_keys($cache) as $key) {
-            $cache[$key] = array();
+            $cache[$key] = [];
         }
         $cacheProperty->setValue($cache);
         $cacheProperty->setAccessible(false);
@@ -48,14 +49,14 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
         }
         $expected[ConfigurableInterface::CLASS_ID_KEY] = $classId;
         $this->assertInternalType('array', $received);
-        $this->assertEquals(sizeof($received), sizeof($expected));
+        $this->assertEquals(count($received), count($expected));
         foreach ($expected as $ek => $ev) {
             $this->assertArrayHasKey($ek, $received);
-            $this->assertTrue($ev === $received[$ek]);
+            $this->assertSame($ev, $received[$ek]);
             unset($received[$ek]);
         }
-        if (sizeof($received)) {
-            $this->fail('Unexpected fields: ' . join(', ', array_keys($received)));
+        if (count($received)) {
+            $this->fail('Unexpected fields: ' . implode(', ', array_keys($received)));
         }
     }
 
@@ -76,9 +77,9 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
         }
         $log = $logger->get();
         foreach ($reference as $name => $value) {
-            $expected = array($method, $name, $value);
+            $expected = [$method, $name, $value];
             $actual = array_shift($log);
-            $this->assertTrue($expected === $actual);
+            $this->assertSame($expected, $actual);
         }
     }
 
@@ -109,10 +110,9 @@ abstract class AbstractConfigTest extends \PHPUnit_Framework_TestCase
         }
         $log = $logger->get();
         foreach (array_keys($reference) as $name) {
-            $expected = array($method, $name);
+            $expected = [$method, $name];
             $actual = array_shift($log);
-            $this->assertTrue($expected === $actual);
+            $this->assertSame($expected, $actual);
         }
     }
-
 }

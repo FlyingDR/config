@@ -16,17 +16,17 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
      *
      * @var ObjectConfig
      */
-    protected $_config;
+    private $config;
     /**
      * Available callback loggers
      *
      * @var array
      */
-    protected $_cbLogs = array();
+    private $cbLogs = [];
 
     public function __construct()
     {
-        $this->_config = new ObjectConfig($this, $this->getConfigOptions(), $this->getConfigCallbacks());
+        $this->config = new ObjectConfig($this, $this->getConfigOptions(), $this->getConfigCallbacks());
     }
 
     /**
@@ -51,7 +51,7 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
      */
     public function isConfigExists($name)
     {
-        return ($this->_config->isConfigExists($name));
+        return $this->config->isConfigExists($name);
     }
 
     /**
@@ -59,7 +59,7 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
      */
     public function getConfig($config = null, $export = false)
     {
-        return ($this->_config->getConfig($config, $export));
+        return $this->config->getConfig($config, $export);
     }
 
     /**
@@ -72,7 +72,7 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
      */
     public function setConfig($config, $value = null)
     {
-        $this->_config->setConfig($config, $value);
+        $this->config->setConfig($config, $value);
     }
 
     /**
@@ -87,7 +87,7 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
      */
     public function modifyConfig(array $config, $modification, $value = null)
     {
-        return ($this->_config->modifyConfig($config, $modification, $value));
+        return $this->config->modifyConfig($config, $modification, $value);
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
      */
     public function setCallbackLogger($method, CallbackLog $logger)
     {
-        $this->_cbLogs[$method] = $logger;
+        $this->cbLogs[$method] = $logger;
     }
 
     /**
@@ -111,11 +111,10 @@ abstract class BaseConfigurableObject implements ConfigurableInterface, Callback
      */
     protected function logCallbackCall($method, array $args)
     {
-        if (array_key_exists($method, $this->_cbLogs)) {
+        if (array_key_exists($method, $this->cbLogs)) {
             /** @var $logger CallbackLog */
-            $logger = $this->_cbLogs[$method];
+            $logger = $this->cbLogs[$method];
             $logger->add($method, $args);
         }
     }
-
 }

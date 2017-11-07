@@ -13,10 +13,10 @@ class B extends A
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'inherited' => 'B',
             'from_b'    => 'B',
-        ));
+        ]);
     }
 
     /**
@@ -37,5 +37,4 @@ class B extends A
         }
         return true;
     }
-
 }

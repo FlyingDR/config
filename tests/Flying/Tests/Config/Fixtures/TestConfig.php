@@ -14,7 +14,7 @@ class TestConfig extends AbstractConfig implements CallbackTrackingInterface
      *
      * @var array
      */
-    protected $_cbLogs = array();
+    private $cbLogs = [];
 
     /**
      * Set logger for defined method
@@ -25,7 +25,7 @@ class TestConfig extends AbstractConfig implements CallbackTrackingInterface
      */
     public function setCallbackLogger($method, CallbackLog $logger)
     {
-        $this->_cbLogs[$method] = $logger;
+        $this->cbLogs[$method] = $logger;
     }
 
     /**
@@ -37,9 +37,9 @@ class TestConfig extends AbstractConfig implements CallbackTrackingInterface
      */
     protected function logCallbackCall($method, array $args)
     {
-        if (array_key_exists($method, $this->_cbLogs)) {
+        if (array_key_exists($method, $this->cbLogs)) {
             /** @var $logger CallbackLog */
-            $logger = $this->_cbLogs[$method];
+            $logger = $this->cbLogs[$method];
             $logger->add($method, $args);
         }
     }
@@ -52,5 +52,4 @@ class TestConfig extends AbstractConfig implements CallbackTrackingInterface
         $this->logCallbackCall(__FUNCTION__, func_get_args());
         parent::onConfigChange($name, $value);
     }
-
 }

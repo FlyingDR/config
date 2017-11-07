@@ -12,7 +12,7 @@ class ConfigWithRejectedValidation extends BasicConfig
      *
      * @var boolean
      */
-    protected $_reject = true;
+    protected $reject = true;
 
     /**
      * @param bool $reject
@@ -32,9 +32,9 @@ class ConfigWithRejectedValidation extends BasicConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'rejected' => 'abc',
-        ));
+        ]);
     }
 
     /**
@@ -45,7 +45,7 @@ class ConfigWithRejectedValidation extends BasicConfig
      */
     public function setReject($status)
     {
-        $this->_reject = (boolean)$status;
+        $this->reject = (boolean)$status;
     }
 
     /**
@@ -53,9 +53,10 @@ class ConfigWithRejectedValidation extends BasicConfig
      */
     protected function validateConfig($name, &$value)
     {
+        /** @noinspection DegradedSwitchInspection */
         switch ($name) {
             case 'rejected':
-                return !$this->_reject;
+                return !$this->reject;
                 break;
             default:
                 return parent::validateConfig($name, $value);

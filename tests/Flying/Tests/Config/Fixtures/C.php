@@ -7,12 +7,12 @@ namespace Flying\Tests\Config\Fixtures;
  */
 class C extends B
 {
-
     /**
      * {@inheritdoc}
      */
     protected function validateConfig($name, &$value)
     {
+        /** @noinspection DegradedSwitchInspection */
         switch ($name) {
             case 'inherited':
                 $value = preg_replace('/[^C]+/i', '', $value);
@@ -23,5 +23,4 @@ class C extends B
         }
         return true;
     }
-
 }

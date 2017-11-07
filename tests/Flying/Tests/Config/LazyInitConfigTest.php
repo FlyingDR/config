@@ -9,34 +9,34 @@ use Flying\Tests\Config\Fixtures\LazyInitConfigWithRejectedValidation;
 
 class LazyInitConfigTest extends AbstractConfigTest
 {
-    protected $_configReference = array(
+    private static $configReference = [
         'string_option'  => 'some value',
         'boolean_option' => true,
         'int_option'     => 42,
-    );
-    protected $_configModifications = array(
+    ];
+    private static $configModifications = [
         'string_option'  => 'modified value',
         'boolean_option' => null,
         'int_option'     => 12345,
-    );
-    protected $_configExpected = array(
+    ];
+    private static $configExpected = [
         'string_option'  => 'modified value',
         'boolean_option' => false,
         'int_option'     => 12345,
-    );
+    ];
 
     public function testLazyInitOnGettingSingleConfigValue()
     {
         $object = $this->getConfigObject();
-        foreach ($this->_configReference as $name => $value) {
+        foreach (self::$configReference as $name => $value) {
             $this->assertEquals($object->getConfig($name), $value);
         }
     }
 
     public function testLazyInitCallbackCallLog()
     {
-        $this->runLazyConfigInitCallbackTest($this->getConfigObject(), $this->_configReference, true);
-        $this->runLazyConfigInitCallbackTest($this->getConfigObject(), $this->_configReference, false);
+        $this->runLazyConfigInitCallbackTest($this->getConfigObject(), self::$configReference);
+        $this->runLazyConfigInitCallbackTest($this->getConfigObject(), self::$configReference, false);
     }
 
     public function testSettingConfigOptionsShouldResetLazyInit()
@@ -45,25 +45,27 @@ class LazyInitConfigTest extends AbstractConfigTest
         $logger = new CallbackLog();
         $method = 'lazyConfigInit';
         $object->setCallbackLogger($method, $logger);
-        $object->setConfig($this->_configModifications);
-        $this->validateConfig($object->getConfig(), $this->_configExpected);
+        $object->setConfig(self::$configModifications);
+        $this->validateConfig($object->getConfig(), self::$configExpected);
         $this->assertEmpty($logger->get());
     }
 
     public function testLazyInitWithInvalidValuesShouldResultInValidConfig()
     {
         $object = new LazyInitConfigWithInvalidValues();
-        $this->validateConfig($object->getConfig(), array_merge($this->_configReference, array(
+        $this->validateConfig($object->getConfig(), array_merge(self::$configReference, [
             'should_be_boolean' => true,
             'should_be_int'     => 123,
             'should_be_string'  => '12345',
-        )), get_class($object));
+        ]), get_class($object));
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testLazyInitWithRejectedValidationRaisesException()
     {
         $object = new LazyInitConfigWithRejectedValidation();
-        $this->setExpectedException('\RuntimeException');
         $object->getConfig();
     }
 
@@ -76,5 +78,4 @@ class LazyInitConfigTest extends AbstractConfigTest
     {
         return new LazyInitConfig();
     }
-
 }

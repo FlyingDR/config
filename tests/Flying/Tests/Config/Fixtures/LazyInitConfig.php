@@ -13,11 +13,11 @@ class LazyInitConfig extends TestConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'string_option',
             'boolean_option',
             'int_option',
-        ));
+        ]);
     }
 
     /**
@@ -63,5 +63,4 @@ class LazyInitConfig extends TestConfig
         }
         return true;
     }
-
 }

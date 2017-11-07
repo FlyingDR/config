@@ -16,8 +16,8 @@ class ForbiddenTypesOfAsInitialValues extends AbstractConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'object_option' => new \ArrayObject(),
-        ));
+        ]);
     }
 }

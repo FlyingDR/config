@@ -13,9 +13,9 @@ class ConfigWithValidationException extends BasicConfig
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'exception' => null,
-        ));
+        ]);
     }
 
     /**
@@ -23,14 +23,14 @@ class ConfigWithValidationException extends BasicConfig
      */
     protected function validateConfig($name, &$value)
     {
+        /** @noinspection DegradedSwitchInspection */
         switch ($name) {
             case 'exception':
-                throw new \Exception('Test exception on checking config option');
+                throw new \RuntimeException('Test exception on checking config option');
                 break;
             default:
                 return parent::validateConfig($name, $value);
                 break;
         }
     }
-
 }

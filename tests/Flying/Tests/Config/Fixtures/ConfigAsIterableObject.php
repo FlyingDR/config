@@ -7,36 +7,35 @@ namespace Flying\Tests\Config\Fixtures;
  */
 class ConfigAsIterableObject implements \Iterator
 {
-    private $properties = array();
+    private $properties;
 
-    public function __construct(array $properties = array())
+    public function __construct(array $properties = [])
     {
         $this->properties = $properties;
     }
 
-    function rewind()
+    public function rewind()
     {
         return reset($this->properties);
     }
 
-    function current()
+    public function current()
     {
         return current($this->properties);
     }
 
-    function key()
+    public function key()
     {
         return key($this->properties);
     }
 
-    function next()
+    public function next()
     {
         return next($this->properties);
     }
 
-    function valid()
+    public function valid()
     {
         return key($this->properties) !== null;
     }
-
 }

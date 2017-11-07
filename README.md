@@ -40,20 +40,18 @@ use Flying\Config\AbstractConfig;
 
 class MyCache extends AbstractConfig
 {
-
     protected function initConfig()
     {
         parent::initConfig();
-        $this->mergeConfig(array(
+        $this->mergeConfig([
             'enabled'           => true,    // Boolean value
             'path'              => null,    // Path to directory where to store files, no path is configured by default
             'prefix'            => null,    // Prefix for cache entries (string or null)
             'hash_method'       => 'md5',   // Hash method to use for cache keys generation, accepted values are 'md5' and 'sha1'
             'directory_depth'   => 1,       // Depth of hashed directories structure (integer greater then 0)
             'lifetime'          => 3600,    // Cache entry lifetime in seconds
-        ));
+        ]);
     }
-
 }
 ```
 
@@ -72,10 +70,10 @@ $cache->setConfig('enabled', true);
 ```
 or multiple values at once
 ```php
-$cache->setConfig(array(
+$cache->setConfig([
     'path'      => realpath(__DIR__ . '/../../cache'),
     'prefix'    => 'my_',
-));
+]);
 ```
 but at this point we can't be sure that our configuration is valid at any point of time. To achieve this - it is necessary to implement configuration validator.
 
@@ -107,7 +105,7 @@ protected function validateConfig($name, &$value)
             break;
         case 'hash_method':
             if (is_string($value)) {
-                if (!in_array($value, array('md5', 'sha1'))) {
+                if (!in_array($value, ['md5', 'sha1'])) {
                     trigger_error('Invalid hash method: ' . $value, E_USER_WARNING);
                     return false;
                 }
@@ -138,9 +136,9 @@ As of v1.1.0 it is possible to perform lazy (upon request) initialization of con
 protected function initConfig()
 {
     parent::initConfig();
-    $this->mergeConfig(array(
+    $this->mergeConfig([
         'cache'     => null,    // Cache object instance will be here
-    ));
+    ]);
 }
 
 protected function lazyConfigInit($name)
@@ -169,11 +167,11 @@ If your object configuration is planned to be **completely** initialized in a la
 protected function initConfig()
 {
     parent::initConfig();
-    $this->mergeConfig(array(
+    $this->mergeConfig([
         'cache',        // No values are required
         'loader',
         'some_service',
-    ));
+    ]);
 }
 ```
 # Partial configuration expansion
