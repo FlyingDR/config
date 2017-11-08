@@ -1,0 +1,23 @@
+before_commands:
+    - "composer install --prefer-source"
+
+filter:
+    excluded_paths:
+        - vendor/*
+        - tests/*
+
+checks:
+    php:
+        code_rating: true
+        duplication: true
+
+build:
+    environment:
+        php: 5.6
+    tests:
+        override:
+            -
+                command: 'php ./vendor/bin/phpunit --coverage-clover=coverage-clover'
+                coverage:
+                    file: 'coverage-clover'
+                    format: 'php-clover'
