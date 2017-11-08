@@ -1,6 +1,6 @@
 Object configuration implementation
 ===================================
-[![Build Status](https://secure.travis-ci.org/FlyingDR/config.png?branch=master)](http://travis-ci.org/FlyingDR/config)
+[![Build Status](https://travis-ci.org/FlyingDR/config.svg?branch=master)](https://travis-ci.org/FlyingDR/config) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/FlyingDR/config/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/FlyingDR/config/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/FlyingDR/config/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/FlyingDR/config/?branch=master)
 # Overview
 This package provides simple, fast and flexible implementation of object's configuration management.
 
