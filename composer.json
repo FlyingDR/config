@@ -9,9 +9,9 @@
         }
     ],
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Flying\\Config\\": "lib/",
-            "Flying\\Tests\\": "tests/"
+            "Flying\\Tests\\Config\\": "tests/"
         }
     },
     "require-dev": {

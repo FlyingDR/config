@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<phpunit bootstrap="tests/Flying/Tests/bootstrap.php">
+<phpunit bootstrap="tests/bootstrap.php">
     <testsuites>
         <testsuite name="AllTests">
-            <directory suffix="Test.php">tests/Flying/Tests</directory>
+            <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">lib/Flying</directory>
+            <directory suffix=".php">lib</directory>
         </whitelist>
     </filter>
 </phpunit>

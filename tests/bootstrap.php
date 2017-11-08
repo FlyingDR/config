@@ -4,7 +4,7 @@ namespace Flying\Tests;
 
 $composer = false;
 for ($i = 0; $i < 10; $i++) {
-    $path = __DIR__ . '/' . str_repeat('../', $i) . 'vendor/autoload.php';
+    $path = __DIR__ . 'bootstrap.php/' . str_repeat('../', $i) . 'vendor/autoload.php';
     if (is_file($path)) {
         /** @noinspection PhpIncludeInspection */
         require_once $path;
