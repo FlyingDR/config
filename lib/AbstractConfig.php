@@ -382,25 +382,25 @@ abstract class AbstractConfig implements ConfigurableInterface
         }
         if (is_int(key($config)) && (array_keys($config) === range(0, count($config) - 1))) {
             // Configuration is defined as array of keys with lazy initialization
-            $temp = [];
-            foreach ($config as $key) {
-                if (!is_string($key)) {
-                    throw new \InvalidArgumentException('Configuration option name must be a string');
-                }
-                $temp[$key] = null;
+            if (array_reduce($config, function ($n, $v) {
+                return $n || !is_string($v);
+            }, false)) {
+                throw new \InvalidArgumentException('Lazy configuration should be list of string configuration keys');
             }
-            $config = $temp;
-        }
-        foreach ($config as $key => $value) {
-            if ($value !== null) {
-                if ((!is_scalar($value)) && (!is_array($value))) {
-                    throw new \InvalidArgumentException(sprintf('Non-scalar initial value for configuration option "%s" for class "%s"', $key, get_class($this)));
+            $this->config = array_merge($this->config, array_fill_keys($config, null));
+        } else {
+            // Configuration is given as normal key->value array
+            foreach ($config as $key => $value) {
+                if ($value !== null) {
+                    if ((!is_scalar($value)) && (!is_array($value))) {
+                        throw new \InvalidArgumentException(sprintf('Non-scalar initial value for configuration option "%s" for class "%s"', $key, get_class($this)));
+                    }
+                    if (!$this->validateConfig($key, $value)) {
+                        throw new \RuntimeException(sprintf('Invalid initial value for configuration option "%s" for class "%s"', $key, get_class($this)));
+                    }
                 }
-                if (!$this->validateConfig($key, $value)) {
-                    throw new \RuntimeException(sprintf('Invalid initial value for configuration option "%s" for class "%s"', $key, get_class($this)));
-                }
+                $this->config[$key] = $value;
             }
-            $this->config[$key] = $value;
         }
     }
 }

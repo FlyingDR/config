@@ -353,7 +353,7 @@ class BaseConfigTest extends AbstractConfigTest
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Configuration option name must be a string
+     * @expectedExceptionMessage Lazy configuration should be list of string configuration keys
      */
     public function testInvalidKeyTypeForSimpleConfigDeclaration()
     {
