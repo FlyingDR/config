@@ -137,6 +137,10 @@ abstract class AbstractConfig implements ConfigurableInterface
 
     /**
      * {@inheritdoc}
+     * @param array $config
+     * @param array|\ArrayAccess|\Iterator|object|string $modification
+     * @param mixed $value
+     * @return array
      */
     public function modifyConfig(array $config, $modification, $value = null)
     {
@@ -165,7 +169,7 @@ abstract class AbstractConfig implements ConfigurableInterface
 
     /**
      * {@inheritdoc}
-     * @param string|array|null $config
+     * @param array|\ArrayAccess|\Iterator|object|string|null $config
      * @param boolean $export
      * @return mixed
      * @throws \RuntimeException
@@ -223,6 +227,9 @@ abstract class AbstractConfig implements ConfigurableInterface
 
     /**
      * {@inheritdoc}
+     * @param array|\ArrayAccess|\Iterator|object|string $config
+     * @param mixed $value
+     * @return void
      */
     public function setConfig($config, $value = null)
     {
@@ -244,9 +251,9 @@ abstract class AbstractConfig implements ConfigurableInterface
     /**
      * Attempt to convert given configuration information to array
      *
-     * @param mixed $config   Value to convert to array
-     * @param mixed $value    OPTIONAL Array entry value for inline array entry
-     * @param boolean $inline OPTIONAL TRUE to allow treating given string values as array entry
+     * @param array|\ArrayAccess|\Iterator|object|string $config Value to convert to array
+     * @param mixed $value                                       OPTIONAL Array entry value for inline array entry
+     * @param boolean $inline                                    OPTIONAL TRUE to allow treating given string values as array entry
      * @return mixed
      */
     protected function configToArray($config, $value = null, $inline = false)

@@ -27,17 +27,17 @@ interface ConfigurableInterface
      * If argument is some kind of configuration options set - it will be merged with current object's configuration and returned
      * If no argument is passed - current object's configuration will be returned
      *
-     * @param string|array|null $config     OPTIONAL Option name to get or configuration options
+     * @param array|string|null $config     OPTIONAL Option name to get or configuration options
      *                                      to override default object's configuration.
      * @param boolean $export               OPTIONAL TRUE to skip adding CLASS_ID_KEY entry into resulted configuration array
-         * @return mixed
+     * @return mixed
      */
     public function getConfig($config = null, $export = false);
 
     /**
      * Set configuration options for object
      *
-     * @param array|\ArrayAccess|\Iterator|\stdClass|string $config     Configuration options to set
+     * @param array|string $config          Configuration options to set
      * @param mixed $value                  If first parameter is passed as string then it will be treated as
      *                                      configuration option name and $value as its value
      * @return void
