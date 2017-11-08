@@ -94,7 +94,11 @@ abstract class AbstractConfig implements ConfigurableInterface
             // from its parent.
             // To handle this properly we need to find earliest parent class that have either initConfig()
             // ot validateConfig() method and use is as a mapping target for current class
-            $reflection = new \ReflectionClass($class);
+            try {
+                $reflection = new \ReflectionClass($class);
+            } catch (\ReflectionException $e) {
+                return \stdClass::class;
+            }
             $c = $class;
             do {
                 if (($reflection->getMethod('initConfig')->getDeclaringClass()->getName() === $c) ||
@@ -178,23 +182,27 @@ abstract class AbstractConfig implements ConfigurableInterface
                     $this->resolveLazyConfigInit($config);
                 }
                 return $this->config[$config];
-            } else {
-                return null;
             }
-        } elseif ($config === null) {
+            return null;
+        }
+
+        if ($config === null) {
+            // This is request for complete configuration options set
             $this->resolveLazyConfigInit();
             $config = $this->config;
             if (!$export) {
                 $config[self::CLASS_ID_KEY] = $this->getConfigClassId();
             }
             return $config;
-        } elseif (is_array($config) &&
-            array_key_exists(self::CLASS_ID_KEY, $config) && // This is repetitive call to getConfig()
-            ($config[self::CLASS_ID_KEY] === $this->getConfigClassId())
-        ) // Only classes with same configuration class Id can share configurations
-        {
+        }
+
+        if (is_array($config) &&
+            array_key_exists(self::CLASS_ID_KEY, $config) &&
+            ($config[self::CLASS_ID_KEY] === $this->getConfigClassId())) {
+            // This is repetitive call to getConfig()
             return $config;
         }
+
         // This is request for configuration (with possible merging)
         $config = $this->configToArray($config);
         if (!is_array($config)) {

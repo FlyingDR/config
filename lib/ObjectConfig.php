@@ -107,7 +107,8 @@ class ObjectConfig extends AbstractConfig
      */
     protected function validateConfig($name, &$value)
     {
-        if ($this->callbacks['validateConfig']) {
+        if ($this->callbacks['validateConfig'] !== null) {
+            /** @noinspection VariableFunctionsUsageInspection */
             return call_user_func_array(
                 $this->callbacks['validateConfig'],
                 [$name, &$value]
@@ -121,11 +122,8 @@ class ObjectConfig extends AbstractConfig
      */
     protected function onConfigChange($name, $value)
     {
-        if ($this->callbacks['onConfigChange']) {
-            call_user_func_array(
-                $this->callbacks['onConfigChange'],
-                [$name, $value]
-            );
+        if ($this->callbacks['onConfigChange'] !== null) {
+            call_user_func($this->callbacks['onConfigChange'], $name, $value);
         }
     }
 
@@ -134,11 +132,8 @@ class ObjectConfig extends AbstractConfig
      */
     protected function lazyConfigInit($name)
     {
-        if ($this->callbacks['lazyConfigInit']) {
-            return call_user_func_array(
-                $this->callbacks['lazyConfigInit'],
-                [$name]
-            );
+        if ($this->callbacks['lazyConfigInit'] !== null) {
+            return call_user_func($this->callbacks['lazyConfigInit'], $name);
         }
         return null;
     }
