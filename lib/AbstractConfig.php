@@ -214,10 +214,7 @@ abstract class AbstractConfig implements ConfigurableInterface
             $result[self::CLASS_ID_KEY] = $this->getConfigClassId();
         }
         foreach ($config as $name => $value) {
-            if ((!array_key_exists($name, $result)) || ($name === self::CLASS_ID_KEY)) {
-                continue;
-            }
-            if ($this->validateConfig($name, $value)) {
+            if ($name !== self::CLASS_ID_KEY && array_key_exists($name, $result) && $this->validateConfig($name, $value)) {
                 $result[$name] = $value;
             }
         }
@@ -233,19 +230,14 @@ abstract class AbstractConfig implements ConfigurableInterface
             $this->bootstrapConfig();
         }
         $config = $this->configToArray($config, $value, true);
-        if ((!is_array($config)) || (!count($config))) {
-            return;
-        }
-        foreach ($config as $ck => $cv) {
-            if (!array_key_exists($ck, $this->config)) {
-                continue;
+        if (is_array($config)) {
+            foreach ($config as $ck => $cv) {
+                if (array_key_exists($ck, $this->config) && $this->validateConfig($ck, $cv)) {
+                    $this->config[$ck] = $cv;
+                    unset($this->configPendingLazyInit[$ck]);
+                    $this->onConfigChange($ck, $cv);
+                }
             }
-            if (!$this->validateConfig($ck, $cv)) {
-                continue;
-            }
-            $this->config[$ck] = $cv;
-            unset($this->configPendingLazyInit[$ck]);
-            $this->onConfigChange($ck, $cv);
         }
     }
 
@@ -267,10 +259,9 @@ abstract class AbstractConfig implements ConfigurableInterface
             } elseif ($config instanceof \ArrayAccess) {
                 $temp = [];
                 foreach ($this->config as $k => $v) {
-                    if (($k === ConfigurableInterface::CLASS_ID_KEY) || (!$config->offsetExists($k))) {
-                        continue;
+                    if ($k !== ConfigurableInterface::CLASS_ID_KEY && $config->offsetExists($k)) {
+                        $temp[$k] = $config->offsetGet($k);
                     }
-                    $temp[$k] = $config->offsetGet($k);
                 }
                 $config = $temp;
             }
