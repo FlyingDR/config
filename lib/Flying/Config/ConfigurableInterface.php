@@ -37,7 +37,7 @@ interface ConfigurableInterface
     /**
      * Set configuration options for object
      *
-     * @param array|string $config          Configuration options to set
+     * @param array|\ArrayAccess|\Iterator|\stdClass|string $config     Configuration options to set
      * @param mixed $value                  If first parameter is passed as string then it will be treated as
      *                                      configuration option name and $value as its value
      * @return void
